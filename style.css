@@ -1,0 +1,63 @@
+body {
+    background-color: #232527; /* Roblox Dark Theme */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.auth-container {
+    background-color: #393b3d;
+    padding: 30px;
+    border-radius: 8px;
+    width: 380px;
+    text-align: center;
+    color: white;
+}
+
+.logo { margin-bottom: 20px; filter: invert(1); }
+
+h2 { margin-bottom: 20px; font-weight: 400; }
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #111;
+    border-radius: 4px;
+    background-color: #191b1d;
+    color: white;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#login-btn {
+    background-color: #00b2ff;
+    color: white;
+}
+
+#signup-btn {
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+}
+
+.divider { margin: 15px 0; color: #bbb; font-size: 12px; }
+
+#status-msg {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #ff5f5f;
+}
