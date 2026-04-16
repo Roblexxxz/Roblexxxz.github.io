@@ -1,1 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox | Login</title>
+    <style>
+        /* CSS STYLES */
+        body {
+            background-color: #232527; /* Roblex Dark Theme */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .auth-container {
+            background-color: #393b3d;
+            padding: 30px;
+            border-radius: 8px;
+            width: 380px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .logo { margin-bottom: 20px; filter: invert(1); }
+
+        h2 { margin-bottom: 20px; font-weight: 400; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #111;
+            border-radius: 4px;
+            background-color: #191b1d;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.9; }
+
+        #login-btn {
+            background-color: #00b2ff;
+            color: white;
+        }
+
+        #signup-btn {
+            background-color: transparent;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+
+        .divider { margin: 15px 0; color: #bbb; font-size: 12px; }
+
+        #status-msg {
+            margin-top: 15px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="logo">
+            <img src="https://wikimedia.org" alt="logo" width="50">
+        </div>
+        <h2>Login to Roblox</h2>
+        
+        <div class="input-group">
+            <input type="email" id="email-field" placeholder="Email / Username" required>
+            <input type="password" id="pass-field" placeholder="Password" required>
+        </div>
+
+        <button id="login-btn">Log In</button>
+        <div class="divider">or</div>
+        <button id="signup-btn">Sign Up</button>
+
+        <p id="status-msg"></p>
+    </div>
+
+    <script>
+        // JAVASCRIPT LOGIC
+        document.addEventListener('DOMContentLoaded', () => {
+            const emailInput = document.getElementById('email-field');
+            const passwordInput = document.getElementById('pass-field');
+            const loginBtn = document.getElementById('login-btn');
+            const signupBtn = document.getElementById('signup-btn');
+            const statusMsg = document.getElementById('status-msg');
+
+            function showMessage(text, color) {
+                statusMsg.textContent = text;
+                statusMsg.style.color = color;
+            }
+
+            loginBtn.addEventListener('click', () => {
+                const email = emailInput.value.trim();
+                const pass = passwordInput.value.trim();
+                if (!email || !pass) {
+                    showMessage("Please enter both email and password.", "#ff5f5f");
+                } else {
+                    showMessage("Logging in...", "#00b2ff");
+                    console.log("Login attempt:", { email, pass });
+                }
+            });
+
+            signupBtn.addEventListener('click', () => {
+                const email = emailInput.value.trim();
+                const pass = passwordInput.value.trim();
+                if (!email || !pass) {
+                    showMessage("Please fill in the fields to sign up.", "#ff5f5f");
+                } else {
+                    showMessage("Account creation started!", "#00e676");
+                    console.log("Signup attempt:", { email, pass });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
 
