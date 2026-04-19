@@ -3,314 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblex | Dashboard</title>
-    <!-- Load Three.js from CDN -->
+    <title>Roblex | Home</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cloudflare.com"></script>
-    <style>
-        body {
-            background-color: #232527; color: white; margin: 0;
-            font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: 220px; background: #191b1d; padding: 20px;
-            display: flex; flex-direction: column; border-right: 1px solid #333;
-        }
-        .sidebar h2 { color: #00b2ff; margin-bottom: 30px; }
-        .nav-btn {
-            background: none; border: none; color: #bbb; text-align: left;
-            padding: 12px; cursor: pointer; font-size: 16px; border-radius: 4px;
-        }
-        .nav-btn:hover, .nav-btn.active { background: #393b3d; color: white; }
-
-        /* Main Content */
-        .main-content { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        .container { background-color: #393b3d; padding: 30px; border-radius: 8px; width: 100%; max-width: 600px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-
-        /* Utilities */
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #111; border-radius: 4px; background-color: #191b1d; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .primary-btn { background-color: #00b2ff; color: white; }
-        .secondary-btn { background-color: transparent; border: 1px solid white; color: white; }
-        .hidden { display: none !important; }
-
-        /* 3D Canvas Area */
-        #avatar-canvas-container { width: 100%; height: 300px; background: #191b1d; border-radius: 8px; margin-bottom: 20px; position: relative; }
-        .color-picker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
-        .color-circle { height: 30px; border-radius: 4px; cursor: pointer; border: 2px solid transparent; }
-        .color-circle:hover { border-color: white; }
-
-        /* Friend List */
-        .request-item { display: flex; justify-content: space-between; align-items: center; background: #2a2c2e; padding: 10px; margin: 5px 0; border-radius: 4px; }
-        .accept-btn { background: #00e676; width: auto; padding: 5px 10px; font-size: 12px; margin: 0; }
-    </style>
 </head>
 <body>
 
-    <!-- SIDEBAR (Shown when logged in) -->
-    <div id="sidebar" class="sidebar hidden">
-        <h2>ROBLEX</h2>
-        <button class="nav-btn active" onclick="showTab('home')">Home</button>
-        <button class="nav-btn" onclick="showTab('avatar')">Avatar</button>
-        <button class="nav-btn" onclick="showTab('marketplace')">Marketplace</button>
-        <div style="margin-top: auto;">
-            <p id="user-display" style="font-weight: bold; margin-bottom: 10px;"></p>
-            <button id="logout-btn" class="secondary-btn" style="padding: 8px;">Logout</button>
+    <!-- NAV BAR (Top original style) -->
+    <div id="nav" class="navbar hidden">
+        <span>Roblex</span>
+        <div>
+            <span id="user-display" style="margin-right: 15px; font-weight: bold;"></span>
+            <span id="balance-display" style="color: #00e676; margin-right: 15px;">R$: 0</span>
+            <button id="logout-btn" class="nav-logout">Logout</button>
         </div>
     </div>
 
-    <div class="main-content">
-        <!-- AUTH SECTION -->
-        <div id="auth-section" class="container">
-            <h2 id="auth-title">Welcome to Roblex</h2>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
-            <button id="login-btn" class="primary-btn">Log In</button>
-            <button id="signup-btn" class="secondary-btn">Sign Up</button>
-            <p id="status-msg" style="font-size: 14px; color: #ff5f5f; margin-top: 10px;"></p>
+    <!-- MAIN WRAPPER FOR SIDEBAR + CONTENT -->
+    <div class="wrapper">
+        <!-- SIDEBAR (Matches original theme) -->
+        <div id="sidebar" class="sidebar hidden">
+            <button class="side-btn active" onclick="showTab('home')">Home</button>
+            <button class="side-btn" onclick="showTab('games')">Games</button>
+            <button class="side-btn" onclick="showTab('avatar')">Avatar</button>
+            <button class="side-btn" onclick="showTab('inventory')">Inventory</button>
+            <button class="side-btn" onclick="showTab('marketplace')">Marketplace</button>
         </div>
 
-        <!-- HOME TAB -->
-        <div id="tab-home" class="container hidden">
-            <h1>Welcome Home!</h1>
-            <div style="border-bottom: 1px solid #555; padding-bottom: 20px; margin-bottom: 20px;">
-                <h3>Find Users</h3>
-                <input type="text" id="search-input" placeholder="Enter username...">
-                <button id="search-btn" class="primary-btn">Search User</button>
-                <div id="search-result" class="hidden" style="margin-top: 15px; background: #2a2c2e; padding: 15px; border-radius: 8px; text-align: center;">
-                    <strong id="found-user-name"></strong><br>
-                    <button id="add-friend-btn" class="primary-btn" style="width: auto; margin-top: 10px;">Send Friend Request</button>
-                </div>
+        <div class="content-area">
+            <!-- AUTH SECTION -->
+            <div id="auth-section" class="container">
+                <img src="https://wikimedia.org" alt="logo" width="50" style="filter: invert(1); margin-bottom: 10px;">
+                <h2 id="auth-title">Login to Roblex</h2>
+                <input type="text" id="username" placeholder="Username">
+                <input type="password" id="password" placeholder="Password">
+                <button id="login-btn" class="primary-btn">Log In</button>
+                <button id="signup-btn" class="secondary-btn">Sign Up</button>
+                <p id="status-msg" style="font-size: 14px; color: #ff5f5f;"></p>
             </div>
-            
-            <h3>Friend Requests</h3>
-            <div id="request-container"></div>
-            <p id="no-requests" style="color: #bbb; font-size: 13px;">No pending requests.</p>
-        </div>
 
-        <!-- AVATAR TAB -->
-        <div id="tab-avatar" class="container hidden">
-            <h1>Customize Avatar</h1>
-            <div id="avatar-canvas-container"></div>
-            <h3>Skin Color</h3>
-            <div class="color-picker-grid">
-                <div class="color-circle" style="background: #ffdbac;" onclick="changeColor(0xffdbac)"></div>
-                <div class="color-circle" style="background: #f1c27d;" onclick="changeColor(0xf1c27d)"></div>
-                <div class="color-circle" style="background: #e0ac69;" onclick="changeColor(0xe0ac69)"></div>
-                <div class="color-circle" style="background: #8d5524;" onclick="changeColor(0x8d5524)"></div>
+            <!-- HOME TAB -->
+            <div id="tab-home" class="container hidden">
+                <h1>Find Users</h1>
+                <input type="text" id="search-input" placeholder="Search username...">
+                <button id="search-btn" class="primary-btn">Search</button>
+                <div id="search-results" class="results-box hidden">
+                    <p id="found-name"></p>
+                    <button class="primary-btn" style="width: auto; padding: 5px 15px;">Add Friend</button>
+                </div>
             </div>
-            <h3>Torso Color</h3>
-            <div class="color-picker-grid">
-                <div class="color-circle" style="background: #ff0000;" onclick="changePartColor('torso', 0xff0000)"></div>
-                <div class="color-circle" style="background: #00ff00;" onclick="changePartColor('torso', 0x00ff00)"></div>
-                <div class="color-circle" style="background: #0000ff;" onclick="changePartColor('torso', 0x0000ff)"></div>
-                <div class="color-circle" style="background: #ffff00;" onclick="changePartColor('torso', 0xffff00)"></div>
-            </div>
-        </div>
 
-        <!-- MARKETPLACE TAB -->
-        <div id="tab-marketplace" class="container hidden">
-            <h1>Marketplace</h1>
-            <p style="color: #bbb;">Coming soon: Buy hats, shirts, and gear!</p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div style="background: #191b1d; padding: 20px; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 40px;">🎩</div>
-                    <p>Cool Top Hat</p>
-                    <button class="primary-btn" style="width: auto;">100 Roblex</button>
+            <!-- GAMES TAB -->
+            <div id="tab-games" class="container hidden">
+                <h1>Games</h1>
+                <p style="color: #bbb;">No games yet. Tell me what to build!</p>
+            </div>
+
+            <!-- AVATAR TAB -->
+            <div id="tab-avatar" class="container hidden">
+                <h1>Avatar Editor</h1>
+                <div id="avatar-3d-container"></div>
+                <h3>Skin Tone</h3>
+                <div class="color-row">
+                    <div class="swatch" style="background:#ffdbac" onclick="changeColor(0xffdbac)"></div>
+                    <div class="swatch" style="background:#e0ac69" onclick="changeColor(0xe0ac69)"></div>
+                    <div class="swatch" style="background:#8d5524" onclick="changeColor(0x8d5524)"></div>
                 </div>
-                <div style="background: #191b1d; padding: 20px; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 40px;">👕</div>
-                    <p>Blue Hoodie</p>
-                    <button class="primary-btn" style="width: auto;">50 Roblex</button>
+            </div>
+
+            <!-- MARKETPLACE TAB -->
+            <div id="tab-marketplace" class="container hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                    <h1 style="margin:0;">Market</h1>
+                    <button id="buy-roblex-btn" class="primary-btn" style="width:auto; padding: 10px;">+ Buy Roblex</button>
                 </div>
+                <div class="shop-grid">
+                    <div class="item-card">
+                        <span style="font-size: 40px;">🎩</span>
+                        <p>Classic Hat</p>
+                        <button onclick="buyItem('Top Hat', 100)" class="primary-btn">100 R$</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INVENTORY TAB -->
+            <div id="tab-inventory" class="container hidden">
+                <h1>My Inventory</h1>
+                <div id="inventory-list" class="shop-grid"></div>
             </div>
         </div>
     </div>
 
-    <script>
-        // --- 3D AVATAR SYSTEM (Three.js) ---
-        let scene, camera, renderer, head, torso, leftArm, rightArm;
+    <!-- PAYMENT MODAL -->
+    <div id="pay-modal" class="modal hidden">
+        <div class="container" style="max-width: 350px;">
+            <h2>Purchase Roblex</h2>
+            <select id="pay-amount">
+                <option value="100">100 R$ - $0.99</option>
+                <option value="1000">1000 R$ - $9.99</option>
+                <option value="10000">10000 R$ - $99.99</option>
+            </select>
+            <input type="text" placeholder="Card Number">
+            <button id="confirm-pay" class="primary-btn">Complete Purchase</button>
+            <button id="close-modal" class="secondary-btn">Cancel</button>
+        </div>
+    </div>
 
-        function init3D() {
-            const container = document.getElementById('avatar-canvas-container');
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
-
-            // Create Avatar (Humanoid)
-            const skinMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
-            const shirtMat = new THREE.MeshLambertMaterial({ color: 0x00b2ff });
-
-            // Head
-            head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), skinMat);
-            head.position.y = 1.2;
-            scene.add(head);
-
-            // Torso
-            torso = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 0.6), shirtMat);
-            scene.add(torso);
-
-            // Arms
-            leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.2, 0.4), skinMat);
-            leftArm.position.set(-0.9, 0.1, 0);
-            scene.add(leftArm);
-
-            rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.2, 0.4), skinMat);
-            rightArm.position.set(0.9, 0.1, 0);
-            scene.add(rightArm);
-
-            // Lighting
-            const light = new THREE.DirectionalLight(0xffffff, 1);
-            light.position.set(5, 5, 5);
-            scene.add(light);
-            scene.add(new THREE.AmbientLight(0x404040));
-
-            camera.position.z = 4;
-            camera.position.y = 0.5;
-
-            function animate() {
-                requestAnimationFrame(animate);
-                head.rotation.y += 0.01;
-                torso.rotation.y += 0.01;
-                leftArm.rotation.y += 0.01;
-                rightArm.rotation.y += 0.01;
-                renderer.render(scene, camera);
-            }
-            animate();
-        }
-
-        function changeColor(hex) {
-            head.material.color.setHex(hex);
-            leftArm.material.color.setHex(hex);
-            rightArm.material.color.setHex(hex);
-        }
-
-        function changePartColor(part, hex) {
-            if(part === 'torso') torso.material.color.setHex(hex);
-        }
-
-        // --- AUTH & SEARCH LOGIC ---
-        const authSection = document.getElementById('auth-section');
-        const sidebar = document.getElementById('sidebar');
-        const statusMsg = document.getElementById('status-msg');
-
-        document.getElementById('signup-btn').onclick = () => {
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('password').value.trim();
-            if (!user || !pass) return (statusMsg.textContent = "Fill all fields!");
-
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            if (users.find(u => u.user.toLowerCase() === user.toLowerCase())) return (statusMsg.textContent = "Username taken!");
-
-            users.push({ user, pass, requests: [] });
-            localStorage.setItem('users', JSON.stringify(users));
-            statusMsg.style.color = "#00e676";
-            statusMsg.textContent = "Account created! Now Log In.";
-        };
-
-        document.getElementById('login-btn').onclick = () => {
-            const userInput = document.getElementById('username').value.trim();
-            const passInput = document.getElementById('password').value.trim();
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-
-            const validUser = users.find(u => u.user.toLowerCase() === userInput.toLowerCase() && u.pass === passInput);
-            if (validUser) {
-                localStorage.setItem('currentUser', validUser.user);
-                location.reload(); // Refresh to boot up 3D and UI
-            } else {
-                statusMsg.textContent = "Invalid username or password.";
-            }
-        };
-
-        document.getElementById('logout-btn').onclick = () => {
-            localStorage.removeItem('currentUser');
-            location.reload();
-        };
-
-        // --- SEARCH FIX ---
-        document.getElementById('search-btn').onclick = () => {
-            const query = document.getElementById('search-input').value.trim().toLowerCase();
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const currentUser = localStorage.getItem('currentUser').toLowerCase();
-
-            const found = users.find(u => u.user.toLowerCase() === query);
-
-            if (found) {
-                if (found.user.toLowerCase() === currentUser) {
-                    alert("That's you!");
-                    return;
-                }
-                document.getElementById('search-result').classList.remove('hidden');
-                document.getElementById('found-user-name').textContent = found.user;
-                document.getElementById('add-friend-btn').onclick = () => sendRequest(found.user);
-            } else {
-                alert("User not found! Make sure they signed up.");
-                document.getElementById('search-result').classList.add('hidden');
-            }
-        };
-
-        function sendRequest(targetName) {
-            let users = JSON.parse(localStorage.getItem('users'));
-            const currentUser = localStorage.getItem('currentUser');
-            
-            const target = users.find(u => u.user === targetName);
-            if (!target.requests) target.requests = [];
-            
-            if (!target.requests.includes(currentUser)) {
-                target.requests.push(currentUser);
-                localStorage.setItem('users', JSON.stringify(users));
-                alert("Friend Request Sent!");
-            } else {
-                alert("Request already sent!");
-            }
-        }
-
-        // --- UI TABS ---
-        function showTab(tabName) {
-            document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById('tab-' + tabName).classList.remove('hidden');
-            event.target.classList.add('active');
-            
-            if (tabName === 'avatar' && !renderer) {
-                setTimeout(init3D, 100); // Small delay to let container render
-            }
-        }
-
-        function loadRequests() {
-            const currentUser = localStorage.getItem('currentUser');
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const me = users.find(u => u.user === currentUser);
-            const container = document.getElementById('request-container');
-            container.innerHTML = "";
-
-            if (me && me.requests && me.requests.length > 0) {
-                document.getElementById('no-requests').classList.add('hidden');
-                me.requests.forEach(sender => {
-                    const div = document.createElement('div');
-                    div.className = 'request-item';
-                    div.innerHTML = `<span>${sender}</span> <button class="accept-btn">Accept</button>`;
-                    container.appendChild(div);
-                });
-            }
-        }
-
-        // On Load
-        window.onload = () => {
-            const loggedInUser = localStorage.getItem('currentUser');
-            if (loggedInUser) {
-                authSection.classList.add('hidden');
-                sidebar.classList.remove('hidden');
-                document.getElementById('tab-home').classList.remove('hidden');
-                document.getElementById('user-display').textContent = loggedInUser;
-                loadRequests();
-            }
-        };
-    </script>
+    <script src="main.js"></script>
 </body>
 </html>
