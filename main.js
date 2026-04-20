@@ -1,6 +1,21 @@
 let scene, camera, renderer, head, torso, is3DActive = false;
 let currentUser = null;
 
+// --- PERSISTENCE CHECK (Add this at the top) ---
+window.onload = () => {
+    const savedUser = localStorage.getItem('sessionUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        // Automatically "log in" the UI
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('nav').classList.remove('hidden');
+        document.getElementById('sidebar').classList.remove('hidden');
+        document.getElementById('user-display').innerText = currentUser.username;
+        document.getElementById('balance-display').innerText = "R$: " + currentUser.balance;
+        showTab('home');
+    }
+};
+
 // --- AUTH ---
 document.getElementById('signup-btn').onclick = () => {
     const u = document.getElementById('username').value;
@@ -19,6 +34,9 @@ document.getElementById('login-btn').onclick = () => {
     const user = users.find(x => x.username === u && x.password === p);
     if(user) {
         currentUser = user;
+        // SAVE SESSION HERE
+        localStorage.setItem('sessionUser', JSON.stringify(user));
+        
         document.getElementById('auth-section').classList.add('hidden');
         document.getElementById('nav').classList.remove('hidden');
         document.getElementById('sidebar').classList.remove('hidden');
@@ -35,13 +53,15 @@ function showTab(tabId) {
     document.getElementById('tab-' + tabId).classList.remove('hidden');
 
     if (tabId === 'avatar' && !is3DActive) {
-        setTimeout(init3D, 200); // Wait for CSS to render container
+        setTimeout(init3D, 200); 
     }
 }
 
 function init3D() {
     is3DActive = true;
     const container = document.getElementById('avatar-3d-container');
+    if(!container) return; // Safety check
+    
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -83,7 +103,6 @@ document.getElementById('search-btn').onclick = () => {
     } else alert("Not Found");
 };
 
-// Modal Buttons
 document.getElementById('buy-roblex-btn').onclick = () => document.getElementById('pay-modal').classList.remove('hidden');
 document.getElementById('close-modal').onclick = () => document.getElementById('pay-modal').classList.add('hidden');
 
@@ -110,6 +129,12 @@ function saveData() {
     const idx = users.findIndex(u => u.username === currentUser.username);
     users[idx] = currentUser;
     localStorage.setItem('users', JSON.stringify(users));
+    // ALSO update the session storage so it stays updated on reload
+    localStorage.setItem('sessionUser', JSON.stringify(currentUser));
 }
 
-document.getElementById('logout-btn').onclick = () => location.reload();
+document.getElementById('logout-btn').onclick = () => {
+    // CLEAR SESSION ON LOGOUT
+    localStorage.removeItem('sessionUser');
+    location.reload();
+};
