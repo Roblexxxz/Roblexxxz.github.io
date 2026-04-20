@@ -1,20 +1,19 @@
 export const Input = {
-    keys: { w: false, a: false, s: false, d: false },
     isMoving: false,
+    keys: {},
 
     init() {
-        window.onkeydown = (e) => {
-            this.update(e.key.toLowerCase(), true);
-        };
-        window.onkeyup = (e) => {
-            this.update(e.key.toLowerCase(), false);
-        };
+        window.addEventListener('keydown', (e) => {
+            this.keys[e.key.toLowerCase()] = true;
+            this.updateMoving();
+        });
+        window.addEventListener('keyup', (e) => {
+            this.keys[e.key.toLowerCase()] = false;
+            this.updateMoving();
+        });
     },
 
-    update(key, isDown) {
-        if (this.keys.hasOwnProperty(key)) {
-            this.keys[key] = isDown;
-        }
-        this.isMoving = Object.values(this.keys).some(v => v);
+    updateMoving() {
+        this.isMoving = this.keys['w'] || this.keys['a'] || this.keys['s'] || this.keys['d'];
     }
 };
