@@ -1,17 +1,18 @@
-export function applyAnims(character, state, time) {
-    const { leftArm, rightArm, leftLeg, rightLeg, head } = character;
+export function applyAnims(parts, state, time) {
+    const { head, leftLeg, rightLeg, group } = parts;
 
     if (state === 'idle') {
-        const breathe = Math.sin(time * 0.002) * 0.05;
-        leftArm.rotation.x = breathe;
-        rightArm.rotation.x = -breathe;
-    } 
-    
+        // Slow Roblox Sway
+        group.rotation.y = Math.sin(time * 0.001) * 0.1;
+        head.rotation.x = Math.sin(time * 0.002) * 0.05;
+    }
+
     if (state === 'walking') {
-        const angle = Math.sin(time * 0.01) * 0.6;
-        leftLeg.rotation.x = angle;
-        rightLeg.rotation.x = -angle;
-        leftArm.rotation.x = -angle;
-        rightArm.rotation.x = angle;
+        // Classic R6 Leg Swing
+        const walkSpeed = 0.01;
+        const walkAngle = Math.sin(time * walkSpeed) * 0.6;
+        
+        leftLeg.rotation.x = walkAngle;
+        rightLeg.rotation.x = -walkAngle;
     }
 }
