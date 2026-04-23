@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Roblex | Home</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cloudflare.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
 </head>
 <body>
 
@@ -27,7 +27,6 @@
         </div>
 
         <div class="content-area">
-            <!-- AUTH -->
             <div id="auth-section" class="container">
                 <h2 id="auth-title">Login to Roblex</h2>
                 <input type="text" id="username" placeholder="Username">
@@ -49,8 +48,7 @@
 
             <div id="tab-avatar" class="container hidden">
                 <h1>Avatar Editor</h1>
-                <!-- 3D Viewport -->
-                <div id="avatar-3d-container"></div>
+                <div id="avatar-3d-container" style="width: 100%; height: 300px; background: #eee;"></div>
                 <h3>Skin Tone</h3>
                 <div class="color-row">
                     <div class="swatch" style="background:#ffdbac" onclick="changeColor(0xffdbac)"></div>
@@ -58,41 +56,9 @@
                     <div class="swatch" style="background:#8d5524" onclick="changeColor(0x8d5524)"></div>
                 </div>
             </div>
-
-            <div id="tab-marketplace" class="container hidden">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h1>Market</h1>
-                    <button id="buy-roblex-btn" class="primary-btn" style="width:auto; padding:10px;">+ Buy Roblex</button>
-                </div>
-                <div class="shop-grid">
-                    <div class="item-card">
-                        <span style="font-size:30px;">🎩</span>
-                        <p>Classic Hat</p>
-                        <button onclick="buyItem('Top Hat', 100)" class="primary-btn">100 R$</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="tab-games" class="container hidden"><h1>Games Coming Soon</h1></div>
-            <div id="tab-inventory" class="container hidden"><h1>Your Items</h1><div id="inventory-list"></div></div>
         </div>
     </div>
 
-    <!-- PAYMENT MODAL (Fixed visibility) -->
-    <div id="pay-modal" class="modal hidden">
-        <div class="modal-content">
-            <h2>Purchase Roblex</h2>
-            <select id="pay-amount">
-                <option value="100">100 R$ - $0.99</option>
-                <option value="1000">1000 R$ - $9.99</option>
-                <option value="10000">10000 R$ - $99.99</option>
-            </select>
-            <input type="text" placeholder="Card Number">
-            <button id="confirm-pay" class="primary-btn">Complete Purchase</button>
-            <button id="close-modal" class="secondary-btn">Cancel</button>
-        </div>
-    </div>
-
-    <script src="main.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>
