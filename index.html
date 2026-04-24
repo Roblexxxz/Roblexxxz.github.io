@@ -19,11 +19,10 @@
 
     <div class="wrapper">
         <div id="sidebar" class="sidebar hidden">
-            <button class="side-btn active" onclick="showTab('home')">Home</button>
+            <button id="btn-nav-home" class="side-btn active">Home</button>
             <button class="side-btn" onclick="window.location.href='games/gamehome.html'">Games</button>
-            <button class="side-btn" onclick="window.location.href='Content/Avatar/avatar.html'">Avatar</button>
-            <button class="side-btn" onclick="showTab('inventory')">Inventory</button>
-            <button class="side-btn" onclick="showTab('marketplace')">Marketplace</button>
+            <button id="btn-nav-avatar" class="side-btn">Avatar</button>
+            <button id="btn-nav-inventory" class="side-btn">Inventory</button>
         </div>
 
         <div class="content-area">
@@ -33,7 +32,7 @@
                 <input type="password" id="password" placeholder="Password">
                 <button id="login-btn" class="primary-btn">Log In</button>
                 <button id="signup-btn" class="secondary-btn">Sign Up</button>
-                <p id="status-msg"></p>
+                <p id="status-msg" style="margin-top: 10px; font-size: 14px;"></p>
             </div>
 
             <div id="tab-home" class="container hidden">
@@ -48,12 +47,12 @@
 
             <div id="tab-avatar" class="container hidden">
                 <h1>Avatar Editor</h1>
-                <div id="avatar-3d-container" style="width: 100%; height: 300px; background: #eee;"></div>
+                <div id="avatar-3d-container"></div>
                 <h3>Skin Tone</h3>
                 <div class="color-row">
-                    <div class="swatch" style="background:#ffdbac" onclick="changeColor(0xffdbac)"></div>
-                    <div class="swatch" style="background:#e0ac69" onclick="changeColor(0xe0ac69)"></div>
-                    <div class="swatch" style="background:#8d5524" onclick="changeColor(0x8d5524)"></div>
+                    <div class="swatch" style="background:#ffdbac" data-color="0xffdbac"></div>
+                    <div class="swatch" style="background:#e0ac69" data-color="0xe0ac69"></div>
+                    <div class="swatch" style="background:#8d5524" data-color="0x8d5524"></div>
                 </div>
             </div>
         </div>
