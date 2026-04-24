@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roblex | Home</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-</head>
+    </head>
 <body>
 
     <div id="nav" class="navbar hidden">
@@ -23,25 +23,26 @@
             <button class="side-btn" onclick="window.location.href='games/gamehome.html'">Games</button>
             <button id="btn-nav-avatar" class="side-btn">Avatar</button>
             <button id="btn-nav-inventory" class="side-btn">Inventory</button>
+            <button class="side-btn">Marketplace</button>
         </div>
 
         <div class="content-area">
             <div id="auth-section" class="container">
-                <h2 id="auth-title">Login to Roblex</h2>
+                <h2 id="auth-title">Welcome to Roblex</h2>
                 <input type="text" id="username" placeholder="Username">
                 <input type="password" id="password" placeholder="Password">
                 <button id="login-btn" class="primary-btn">Log In</button>
                 <button id="signup-btn" class="secondary-btn">Sign Up</button>
-                <p id="status-msg" style="margin-top: 10px; font-size: 14px;"></p>
+                <p id="status-msg" style="margin-top: 15px; font-size: 14px;"></p>
             </div>
 
             <div id="tab-home" class="container hidden">
                 <h1>Find Users</h1>
                 <input type="text" id="search-input" placeholder="Search username...">
                 <button id="search-btn" class="primary-btn">Search</button>
-                <div id="search-results" class="results-box hidden">
+                <div id="search-results" class="results-box hidden" style="margin-top: 20px;">
                     <p id="found-name"></p>
-                    <button class="primary-btn" style="width:auto; padding:5px 10px;">Add Friend</button>
+                    <button class="primary-btn" style="width:auto; padding:5px 15px;">Add Friend</button>
                 </div>
             </div>
 
@@ -53,6 +54,7 @@
                     <div class="swatch" style="background:#ffdbac" data-color="0xffdbac"></div>
                     <div class="swatch" style="background:#e0ac69" data-color="0xe0ac69"></div>
                     <div class="swatch" style="background:#8d5524" data-color="0x8d5524"></div>
+                    <div class="swatch" style="background:#5c3816" data-color="0x5c3816"></div>
                 </div>
             </div>
         </div>
