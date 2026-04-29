@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Roblex Server Test</title>
+</head>
+<body>
+    <h1>Roblex Server Connection Test</h1>
+    <div id="status">Not connected</div>
+    <button onclick="testConnection()">Test Connection</button>
+    <div id="log"></div>
+
+    <script>
+        let ws = null;
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+        }
+
+        function testConnection() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.close();
+                return;
+            }
+
+            document.getElementById('status').textContent = 'Connecting...';
+            log('Attempting to connect to ws://localhost:8765');
+
+            ws = new WebSocket('ws://localhost:8765');
+
+            ws.onopen = function(event) {
+                document.getElementById('status').textContent = 'Connected';
+                log('Connected to server');
+
+                // Send test message
+                const testMessage = {
+                    type: 'connect',
+                    client_id: 'test_client_' + Date.now(),
+                    game_id: 'baseplate'
+                };
+                ws.send(JSON.stringify(testMessage));
+                log('Sent: ' + JSON.stringify(testMessage));
+            };
+
+            ws.onmessage = function(event) {
+                log('Received: ' + event.data);
+            };
+
+            ws.onclose = function(event) {
+                document.getElementById('status').textContent = 'Disconnected';
+                log('Connection closed');
+            };
+
+            ws.onerror = function(error) {
+                document.getElementById('status').textContent = 'Error';
+                log('WebSocket error: ' + error);
+            };
+        }
+    </script>
+</body>
+</html>

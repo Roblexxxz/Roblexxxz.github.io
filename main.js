@@ -40,6 +40,11 @@ function showTab(tabName) {
     const target = document.getElementById(`tab-${tabName}`);
     if (target) target.classList.remove('hidden');
 
+    // Initialize 3D avatar when avatar tab is shown
+    if (tabName === 'avatar' && !is3DActive) {
+        init3D();
+    }
+
     // Update Sidebar Styling
     document.querySelectorAll('.side-btn').forEach(btn => btn.classList.remove('active'));
     if(tabName === 'home') navHome?.classList.add('active');
@@ -135,7 +140,7 @@ function init3D() {
     renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
 
-    // Create a basic R6-style character
+    // Create a complete R6-style character like in avatar.html
     const skinMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
     const torsoMat = new THREE.MeshLambertMaterial({ color: 0x00b2ff });
 
@@ -144,11 +149,25 @@ function init3D() {
 
     torso = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 0.6), torsoMat);
     
+    // Add arms
+    const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.4, 0.4), skinMat);
+    leftArm.position.set(-0.8, 0.2, 0);
+    
+    const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.4, 0.4), skinMat);
+    rightArm.position.set(0.8, 0.2, 0);
+    
+    // Add legs
+    const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.4, 0.5), torsoMat);
+    leftLeg.position.set(-0.3, -1.2, 0);
+    
+    const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.4, 0.5), torsoMat);
+    rightLeg.position.set(0.3, -1.2, 0);
+    
     const charGroup = new THREE.Group();
-    charGroup.add(head, torso);
+    charGroup.add(head, torso, leftArm, rightArm, leftLeg, rightLeg);
     scene.add(charGroup);
 
-    characterParts = { head, torso, group: charGroup };
+    characterParts = { head, torso, leftArm, rightArm, leftLeg, rightLeg, group: charGroup };
 
     // Lighting
     const light = new THREE.PointLight(0xffffff, 1.5, 100);
@@ -171,6 +190,9 @@ document.querySelectorAll('.swatch').forEach(swatch => {
     swatch.addEventListener('click', () => {
         const colorValue = swatch.getAttribute('data-color');
         if (head) head.material.color.setHex(parseInt(colorValue));
+        // Also update arms to match skin color
+        if (characterParts.leftArm) characterParts.leftArm.material.color.setHex(parseInt(colorValue));
+        if (characterParts.rightArm) characterParts.rightArm.material.color.setHex(parseInt(colorValue));
     });
 });
 

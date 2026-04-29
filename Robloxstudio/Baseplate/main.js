@@ -3,16 +3,11 @@ import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { loadBaconHair } from '../../Content/Avatar/Assets/BaconHair.js';
 import { Input } from '../../Logic/controls.js';
 import { serverConnection } from '../../servers/server_connect.js';
+import { Character } from './character.js';
 
 // Game variables
 let scene, camera, renderer;
-let character, characterGroup;
-let baseplate;
-let velocity = new THREE.Vector3();
-let isGrounded = true;
-const gravity = -0.01;
-const jumpForce = 0.3;
-const moveSpeed = 0.1;
+let character, baseplate;
 
 // Initialize the game
 function init() {
@@ -40,7 +35,7 @@ function init() {
     createBaseplate();
 
     // Create character
-    createCharacter();
+    character = new Character(scene);
 
     // Initialize controls
     Input.init();
@@ -72,82 +67,16 @@ function createBaseplate() {
     scene.add(baseplate);
 }
 
-function createCharacter() {
-    characterGroup = new THREE.Group();
-
-    // Body parts (simple boxes like Roblox)
-    const skinMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
-    const shirtMat = new THREE.MeshLambertMaterial({ color: 0x00b2ff });
-
-    // Head
-    const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), skinMat);
-    head.position.y = 1.3;
-
-    // Torso
-    const torso = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 0.6), shirtMat);
-
-    // Arms
-    const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.4, 0.4), skinMat);
-    leftArm.position.set(-0.8, 0.2, 0);
-
-    const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.4, 0.4), skinMat);
-    rightArm.position.set(0.8, 0.2, 0);
-
-    // Legs
-    const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.4, 0.5), shirtMat);
-    leftLeg.position.set(-0.3, -1.2, 0);
-
-    const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.4, 0.5), shirtMat);
-    rightLeg.position.set(0.3, -1.2, 0);
-
-    // Add bacon hair
-    const baconHair = loadBaconHair();
-    baconHair.position.y = 1.8;
-    head.add(baconHair);
-
-    characterGroup.add(head, torso, leftArm, rightArm, leftLeg, rightLeg);
-    characterGroup.position.set(0, 2, 0);
-    scene.add(characterGroup);
-
-    character = characterGroup;
-}
 
 function handleKeyDown(event) {
-    if (event.code === 'Space' && isGrounded) {
-        velocity.y = jumpForce;
-        isGrounded = false;
+    if (event.code === 'Space') {
+        character.jump();
     }
 }
 
 function updateCharacter() {
-    // Movement
-    const moveVector = new THREE.Vector3();
-
-    if (Input.keys['w']) moveVector.z -= 1;
-    if (Input.keys['s']) moveVector.z += 1;
-    if (Input.keys['a']) moveVector.x -= 1;
-    if (Input.keys['d']) moveVector.x += 1;
-
-    if (moveVector.length() > 0) {
-        moveVector.normalize();
-        moveVector.multiplyScalar(moveSpeed);
-        character.position.add(moveVector);
-
-        // Rotate character to face movement direction
-        const angle = Math.atan2(moveVector.x, moveVector.z);
-        character.rotation.y = angle;
-    }
-
-    // Gravity and jumping
-    velocity.y += gravity;
-    character.position.y += velocity.y;
-
-    // Ground collision
-    if (character.position.y <= 2) {
-        character.position.y = 2;
-        velocity.y = 0;
-        isGrounded = true;
-    }
+    // Update character movement
+    character.updateMovement(Input.keys);
 
     // Update camera to follow character
     camera.position.x = character.position.x;
@@ -157,20 +86,7 @@ function updateCharacter() {
 
     // Send player state to server
     if (serverConnection.isConnected()) {
-        const playerState = {
-            position: {
-                x: character.position.x,
-                y: character.position.y,
-                z: character.position.z
-            },
-            rotation: {
-                y: character.rotation.y
-            },
-            velocity: {
-                y: velocity.y
-            },
-            isGrounded: isGrounded
-        };
+        const playerState = character.getState();
         // In a real implementation, this would send to the server via WebSocket or HTTP
         // For now, we're just updating the local server connection object
         serverConnection.lastPlayerState = playerState;
