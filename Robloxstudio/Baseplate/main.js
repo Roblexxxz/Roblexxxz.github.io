@@ -2,6 +2,7 @@
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { loadBaconHair } from '../../Content/Avatar/Assets/BaconHair.js';
 import { Input } from '../../Logic/controls.js';
+import { serverConnection } from '../../servers/server_connect.js';
 
 // Game variables
 let scene, camera, renderer;
@@ -44,9 +45,19 @@ function init() {
     // Initialize controls
     Input.init();
 
+    // Connect to server
+    serverConnection.connect('baseplate').then(connectionData => {
+        console.log('Game connected to server:', connectionData);
+    }).catch(error => {
+        console.error('Failed to connect to server:', error);
+    });
+
     // Event listeners
     window.addEventListener('resize', onWindowResize);
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('beforeunload', () => {
+        serverConnection.disconnect();
+    });
 
     // Start game loop
     animate();
@@ -143,6 +154,27 @@ function updateCharacter() {
     camera.position.z = character.position.z + 10;
     camera.position.y = character.position.y + 5;
     camera.lookAt(character.position);
+
+    // Send player state to server
+    if (serverConnection.isConnected()) {
+        const playerState = {
+            position: {
+                x: character.position.x,
+                y: character.position.y,
+                z: character.position.z
+            },
+            rotation: {
+                y: character.rotation.y
+            },
+            velocity: {
+                y: velocity.y
+            },
+            isGrounded: isGrounded
+        };
+        // In a real implementation, this would send to the server via WebSocket or HTTP
+        // For now, we're just updating the local server connection object
+        serverConnection.lastPlayerState = playerState;
+    }
 }
 
 function onWindowResize() {
