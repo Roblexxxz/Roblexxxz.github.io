@@ -11,51 +11,87 @@ let character, baseplate;
 
 // Initialize the game
 function init() {
-    // Scene setup
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87ceeb); // Sky blue
+    try {
+        console.log('Initializing Baseplate game...');
 
-    // Camera
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 5, 10);
+        // Check if canvas exists
+        const canvas = document.getElementById('game-canvas');
+        if (!canvas) {
+            console.error('Canvas element not found!');
+            return;
+        }
 
-    // Renderer
-    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('game-canvas') });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+        // Scene setup
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb); // Sky blue
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
+        // Camera
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 5, 10);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(10, 10, 5);
-    scene.add(directionalLight);
+        // Renderer
+        renderer = new THREE.WebGLRenderer({ canvas: canvas });
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-    // Create baseplate
-    createBaseplate();
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
 
-    // Create character
-    character = new Character(scene);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 10, 5);
+        scene.add(directionalLight);
 
-    // Initialize controls
-    Input.init();
+        // Create baseplate
+        createBaseplate();
 
-    // Connect to server
-    serverConnection.connect('baseplate').then(connectionData => {
-        console.log('Game connected to server:', connectionData);
-    }).catch(error => {
-        console.error('Failed to connect to server:', error);
-    });
+        // Create character
+        console.log('Creating character...');
+        character = new Character(scene);
+        console.log('Character created successfully');
 
-    // Event listeners
-    window.addEventListener('resize', onWindowResize);
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('beforeunload', () => {
-        serverConnection.disconnect();
-    });
+        // Initialize controls
+        Input.init();
 
-    // Start game loop
-    animate();
+        // Connect to server (don't block initialization)
+        serverConnection.connect('baseplate').then(connectionData => {
+            console.log('Game connected to server:', connectionData);
+        }).catch(error => {
+            console.warn('Server connection failed, continuing in offline mode:', error.message);
+        });
+
+        // Event listeners
+        window.addEventListener('resize', onWindowResize);
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('beforeunload', () => {
+            serverConnection.disconnect();
+        });
+
+        // Start game loop
+        console.log('Starting game loop...');
+        animate();
+
+        console.log('Baseplate game initialized successfully!');
+
+        // Hide loading screen
+        const loadingDiv = document.getElementById('loading');
+        if (loadingDiv) {
+            loadingDiv.classList.add('hidden');
+        }
+    } catch (error) {
+        console.error('Error initializing game:', error);
+
+        // Hide loading screen and show error
+        const loadingDiv = document.getElementById('loading');
+        if (loadingDiv) {
+            loadingDiv.innerHTML = `
+                <h2>Failed to Load Game</h2>
+                <p>${error.message}</p>
+                <p>Check the browser console for more details.</p>
+                <button onclick="location.reload()">Retry</button>
+            `;
+        }
+    }
+}
 }
 
 function createBaseplate() {

@@ -1,3 +1,5 @@
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
 export function loadBaconHair() {
     const hairGroup = new THREE.Group();
     const mat = new THREE.MeshLambertMaterial({ color: 0x4e342e });
