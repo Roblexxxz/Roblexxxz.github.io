@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblex | Games</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <div id="nav" class="navbar">
+        <span>Roblex</span>
+        <div>
+            <span id="user-display" style="margin-right: 15px; font-weight: bold;"></span>
+            <span id="balance-display" style="color: #00e676; margin-right: 15px;">R$: 0</span>
+            <button id="logout-btn" class="nav-logout">Logout</button>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <div id="sidebar" class="sidebar">
+            <button class="side-btn" onclick="window.location.href='../index.html'">Home</button>
+            <button class="side-btn active">Games</button>
+            <button class="side-btn" onclick="window.location.href='../index.html#avatar'">Avatar</button>
+            <button class="side-btn">Inventory</button>
+            <button class="side-btn">Marketplace</button>
+        </div>
+
+        <div class="content-area">
+            <div class="container">
+                <h1>Games</h1>
+                <div class="game-card">
+                    <h2>Baseplate</h2>
+                    <p>A classic Roblox baseplate experience with bacon avatars.</p>
+                    <button id="join-baseplate" class="primary-btn">Join</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple join button handler
+        document.getElementById('join-baseplate').addEventListener('click', () => {
+            window.location.href = '../Robloxstudio/Baseplate/index.html';
+        });
+    </script>
+</body>
+</html></content>
+<parameter name="filePath">/workspaces/Roblexxxz.github.io/games/gamehome.html

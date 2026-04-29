@@ -24,6 +24,8 @@ const statusMsg = document.getElementById('status-msg');
 
 const navHome = document.getElementById('btn-nav-home');
 const navAvatar = document.getElementById('btn-nav-avatar');
+const navInventory = document.getElementById('btn-nav-inventory');
+const navMarketplace = document.getElementById('btn-nav-marketplace');
 
 // --- APP NAVIGATION ---
 function showTab(tabName) {
@@ -31,6 +33,8 @@ function showTab(tabName) {
     document.getElementById('auth-section').classList.add('hidden');
     document.getElementById('tab-home').classList.add('hidden');
     document.getElementById('tab-avatar').classList.add('hidden');
+    document.getElementById('tab-inventory').classList.add('hidden');
+    document.getElementById('tab-marketplace').classList.add('hidden');
     
     // Show selected container
     const target = document.getElementById(`tab-${tabName}`);
@@ -40,10 +44,14 @@ function showTab(tabName) {
     document.querySelectorAll('.side-btn').forEach(btn => btn.classList.remove('active'));
     if(tabName === 'home') navHome?.classList.add('active');
     if(tabName === 'avatar') navAvatar?.classList.add('active');
+    if(tabName === 'inventory') navInventory?.classList.add('active');
+    if(tabName === 'marketplace') navMarketplace?.classList.add('active');
 }
 
 navHome?.addEventListener('click', () => showTab('home'));
 navAvatar?.addEventListener('click', () => showTab('avatar'));
+navInventory?.addEventListener('click', () => showTab('inventory'));
+navMarketplace?.addEventListener('click', () => showTab('marketplace'));
 
 // --- SIGN UP LOGIC ---
 signupBtn?.addEventListener('click', () => {
