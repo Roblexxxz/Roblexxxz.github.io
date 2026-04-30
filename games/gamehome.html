@@ -40,7 +40,8 @@
     <script>
         // Simple join button handler
         document.getElementById('join-baseplate').addEventListener('click', () => {
-            window.location.href = '../Robloxstudio/Baseplate/index.html';
+            const room = 'baseplate';
+            window.location.href = `../Robloxstudio/Baseplate/index.html?room=${room}`;
         });
     </script>
 </body>

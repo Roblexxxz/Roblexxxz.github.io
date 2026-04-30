@@ -24,9 +24,11 @@
             }
 
             document.getElementById('status').textContent = 'Connecting...';
-            log('Attempting to connect to ws://localhost:8765');
+            const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+            const serverUrl = `${protocol}://${location.hostname}:8765`;
+            log('Attempting to connect to ' + serverUrl);
 
-            ws = new WebSocket('ws://localhost:8765');
+            ws = new WebSocket(serverUrl);
 
             ws.onopen = function(event) {
                 document.getElementById('status').textContent = 'Connected';

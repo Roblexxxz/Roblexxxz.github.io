@@ -7,11 +7,78 @@ import { Character } from './character.js';
 // Game variables
 let scene, camera, renderer;
 let character, baseplate;
+let roomId = 'baseplate';
+let channel = null;
+let playerId = `player_${Math.random().toString(36).slice(2, 10)}`;
+const players = new Set();
+
+function getRoomId() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('room') || 'baseplate';
+}
+
+function createRoomHud() {
+    const hud = document.createElement('div');
+    hud.id = 'room-hud';
+    hud.style.position = 'fixed';
+    hud.style.left = '10px';
+    hud.style.top = '10px';
+    hud.style.padding = '10px 14px';
+    hud.style.background = 'rgba(0, 0, 0, 0.65)';
+    hud.style.color = '#fff';
+    hud.style.fontFamily = 'Arial, sans-serif';
+    hud.style.fontSize = '14px';
+    hud.style.lineHeight = '1.4';
+    hud.style.borderRadius = '8px';
+    hud.style.zIndex = '1000';
+    hud.innerText = 'Joining room...';
+    document.body.appendChild(hud);
+}
+
+function updateRoomHud() {
+    const hud = document.getElementById('room-hud');
+    if (!hud) return;
+    hud.innerText = `Room: ${roomId}\nPlayers: ${players.size}`;
+}
+
+function initRoomSync() {
+    roomId = getRoomId();
+    players.add(playerId);
+    createRoomHud();
+
+    if ('BroadcastChannel' in window) {
+        channel = new BroadcastChannel(`roblex_baseplate_${roomId}`);
+
+        channel.onmessage = (event) => {
+            const { type, id } = event.data || {};
+            if (!id) return;
+
+            if (type === 'player_join') {
+                players.add(id);
+                updateRoomHud();
+            } else if (type === 'player_leave') {
+                players.delete(id);
+                updateRoomHud();
+            }
+        };
+
+        channel.postMessage({ type: 'player_join', id: playerId });
+        updateRoomHud();
+
+        window.addEventListener('beforeunload', () => {
+            channel.postMessage({ type: 'player_leave', id: playerId });
+        });
+    } else {
+        const hud = document.getElementById('room-hud');
+        if (hud) hud.innerText += '\n(Shared room not available in this browser.)';
+    }
+}
 
 // Initialize the game
 function init() {
     try {
         console.log('Initializing Baseplate game...');
+        initRoomSync();
 
         // Check if canvas exists
         const canvas = document.getElementById('game-canvas');
@@ -80,7 +147,6 @@ function init() {
             `;
         }
     }
-}
 }
 
 function createBaseplate() {
