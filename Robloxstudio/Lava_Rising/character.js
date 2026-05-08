@@ -93,15 +93,28 @@ export class Survivor {
         }
     }
 
-    applyPhysics() {
-        this.velocity.y += this.gravity;
-        this.characterGroup.position.y += this.velocity.y;
-        if (this.characterGroup.position.y <= 1.4) {
-            this.characterGroup.position.y = 1.4;
-            this.velocity.y = 0;
-            this.isGrounded = true;
+    applyPhysics(worldPlatforms) {
+    this.velocity.y += this.gravity;
+    this.characterGroup.position.y += this.velocity.y;
+
+    this.isGrounded = false;
+    
+    for (let platform of worldPlatforms) {
+        const box = new THREE.Box3().setFromObject(platform);
+        const playerPos = this.characterGroup.position;
+        
+        if (playerPos.x > box.min.x && playerPos.x < box.max.x &&
+            playerPos.z > box.min.z && playerPos.z < box.max.z) {
+            
+            if (playerPos.y >= box.max.y && playerPos.y <= box.max.y + 0.5) {
+                this.characterGroup.position.y = box.max.y;
+                this.velocity.y = 0;
+                this.isGrounded = true;
+                break;
+            }
         }
     }
+}
 
     jump() {
         if (this.isGrounded) {
