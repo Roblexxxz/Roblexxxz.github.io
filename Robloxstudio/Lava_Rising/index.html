@@ -7,7 +7,18 @@
     <link rel="stylesheet" href="ui.css">
 </head>
 <body>
-    <div id="loading-overlay">LOADING LAVA...</div>
+    <div id="loading-overlay">
+        <div id="lobby-ui" class="hidden">
+            <h1 id="display-code">CODE: ------</h1>
+            <div id="player-list" style="position:fixed; top:20px; right:20px; text-align:right;"></div>
+            <button id="start-btn" class="primary-btn" style="width:200px">START GAME</button>
+        </div>
+        <div id="menu-ui">
+            <h1>LAVA RISING</h1>
+            <button id="host-btn" class="primary-btn">HOST SERVER</button>
+            <p>Or use join.html to enter a code</p>
+        </div>
+    </div>
     <canvas id="game-canvas"></canvas>
     
     <script type="importmap">
@@ -19,15 +30,44 @@
     </script>
 
     <script type="module">
-        import { Input } from './controls.js';
-        Input.init();
+        import { Lobby } from './join.js';
         
-        const loader = document.getElementById('loading-overlay');
-        window.addEventListener('load', () => {
-            loader.classList.add('hidden');
-        });
-    </script>
+        const hostBtn = document.getElementById('host-btn');
+        const startBtn = document.getElementById('start-btn');
+        const menuUi = document.getElementById('menu-ui');
+        const lobbyUi = document.getElementById('lobby-ui');
+        const playerList = document.getElementById('player-list');
 
+        hostBtn.onclick = () => {
+            const code = Lobby.host();
+            document.getElementById('display-code').innerText = "CODE: " + code;
+            menuUi.classList.add('hidden');
+            lobbyUi.classList.remove('hidden');
+            setInterval(() => {
+                playerList.innerHTML = Lobby.getPlayers(code).map(p => `<div>${p}</div>`).join('');
+            }, 1000);
+        };
+
+        const checkJoinCode = localStorage.getItem('current_lobby_code');
+        if(checkJoinCode && !Lobby.isHost) {
+            menuUi.classList.add('hidden');
+            lobbyUi.classList.remove('hidden');
+            document.getElementById('display-code').innerText = "WAITING FOR HOST...";
+            startBtn.classList.add('hidden');
+            setInterval(() => {
+                playerList.innerHTML = Lobby.getPlayers(checkJoinCode).map(p => `<div>${p}</div>`).join('');
+                if(Lobby.checkStarted(checkJoinCode)) {
+                    document.getElementById('loading-overlay').classList.add('hidden');
+                }
+            }, 1000);
+        }
+
+        startBtn.onclick = () => {
+            const code = localStorage.getItem('current_lobby_code');
+            Lobby.startGame(code);
+            document.getElementById('loading-overlay').classList.add('hidden');
+        };
+    </script>
     <script type="module" src="main.js"></script>
 </body>
 </html>
