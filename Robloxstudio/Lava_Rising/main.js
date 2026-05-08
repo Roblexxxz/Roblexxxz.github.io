@@ -59,12 +59,18 @@ function updateHUD() {
 function animate() {
     requestAnimationFrame(animate);
     world.updateLava();
-    player.update(keys, world.lava.position.y);
+    player.update(Input.keys, world.lava.position.y);
     npcs.forEach(npc => npc.update(null, world.lava.position.y));
 
     if (player.isAlive) {
-        const targetCam = new THREE.Vector3(player.position.x, player.position.y + 6, player.position.z + 12);
-        camera.position.lerp(targetCam, 0.1);
+        camera.rotation.order = 'YXZ';
+        camera.rotation.y = Input.euler.y;
+        camera.rotation.x = Input.euler.x;
+
+        const dist = 10;
+        camera.position.x = player.position.x + Math.sin(Input.euler.y) * dist;
+        camera.position.z = player.position.z + Math.cos(Input.euler.y) * dist;
+        camera.position.y = player.position.y + 5 + (Math.sin(Input.euler.x) * dist);
         camera.lookAt(player.position);
     }
 
