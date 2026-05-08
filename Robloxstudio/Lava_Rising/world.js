@@ -10,36 +10,51 @@ export class World {
     }
 
     createBaseplate() {
-        const geo = new THREE.PlaneGeometry(200, 200);
-        const mat = new THREE.MeshLambertMaterial({ color: 0x333333 });
+        const geo = new THREE.BoxGeometry(200, 1, 200);
+        const mat = new THREE.MeshLambertMaterial({ color: 0x222222 });
         const plate = new THREE.Mesh(geo, mat);
-        plate.rotation.x = -Math.PI / 2;
-        plate.position.y = 0;
+        plate.position.y = -0.5;
         this.scene.add(plate);
+        this.platforms.push(plate);
     }
 
     createTower() {
         const mat = new THREE.MeshLambertMaterial({ color: 0x00ff88 });
-        for (let i = 0; i < 50; i++) {
-            const geo = new THREE.BoxGeometry(4, 0.6, 4);
-            const p = new THREE.Mesh(geo, mat);
-            const angle = i * 0.5;
-            const radius = 8;
-            p.position.set(Math.cos(angle) * radius, i * 2, Math.sin(angle) * radius);
+        const neonMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.5 });
+        
+        for (let i = 0; i < 60; i++) {
+            const isNeon = i % 5 === 0;
+            const geo = new THREE.BoxGeometry(isNeon ? 6 : 4, 0.8, isNeon ? 6 : 4);
+            const p = new THREE.Mesh(geo, isNeon ? neonMat : mat);
+            
+            const angle = i * 0.4;
+            const radius = 7 + (Math.sin(i * 0.1) * 3);
+            
+            p.position.set(
+                Math.cos(angle) * radius,
+                i * 2.2,
+                Math.sin(angle) * radius
+            );
+            
             this.scene.add(p);
             this.platforms.push(p);
         }
     }
 
     createLava() {
-        const geo = new THREE.BoxGeometry(500, 1, 500);
-        const mat = new THREE.MeshLambertMaterial({ color: 0xff4500, transparent: true, opacity: 0.8 });
+        const geo = new THREE.BoxGeometry(1000, 1, 1000);
+        const mat = new THREE.MeshStandardMaterial({ 
+            color: 0xff2200, 
+            emissive: 0xff0000, 
+            transparent: true, 
+            opacity: 0.9 
+        });
         this.lava = new THREE.Mesh(geo, mat);
         this.lava.position.y = -5;
         this.scene.add(this.lava);
     }
 
     updateLava() {
-        this.lava.position.y += 0.02;
+        this.lava.position.y += 0.025;
     }
 }
