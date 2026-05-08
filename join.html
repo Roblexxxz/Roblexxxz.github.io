@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Join Server</title>
+    <link rel="stylesheet" href="Robloxstudio/Lava_Rising/ui.css">
+    <style>
+        body { background-color: #232527; font-family: 'Segoe UI', sans-serif; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background-color: #393b3d; padding: 30px; border-radius: 8px; width: 350px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #191b1d; border: 1px solid #111; color: white; border-radius: 4px; box-sizing: border-box; }
+        .primary-btn { width: 100%; padding: 12px; background: #00b2ff; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>JOIN SERVER</h2>
+        <input type="text" id="join-username" placeholder="Username">
+        <input type="text" id="join-code" placeholder="Server Code">
+        <button class="primary-btn" id="btn-join">JOIN LOBBY</button>
+    </div>
+    <script type="module">
+        document.getElementById('btn-join').onclick = () => {
+            const user = document.getElementById('join-username').value;
+            const code = document.getElementById('join-code').value;
+            if(!user || !code) return alert("Fill all fields");
+            
+            let lobby = JSON.parse(localStorage.getItem('lobby_' + code)) || { players: [], started: false };
+            lobby.players.push(user);
+            localStorage.setItem('lobby_' + code, JSON.stringify(lobby));
+            localStorage.setItem('current_user', user);
+            localStorage.setItem('current_lobby_code', code);
+            
+            window.location.href = 'Robloxstudio/Lava_Rising/index.html';
+        };
+    </script>
+</body>
+</html>
