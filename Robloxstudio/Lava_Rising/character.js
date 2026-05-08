@@ -10,8 +10,9 @@ export class Survivor {
         this.isGrounded = true;
         this.gravity = -0.012;
         this.jumpForce = 0.35;
-        this.moveSpeed = isNPC ? 0.07 : 0.12;
+        this.moveSpeed = isNPC ? 0.08 : 0.12;
         this.oofSound = new Audio('../../Content/sounds/roblox-ooof-made-with-Voicemod.mp3');
+        this.targetPlatform = null;
         this.createModel();
     }
 
@@ -33,10 +34,10 @@ export class Survivor {
         this.scene.add(this.characterGroup);
     }
 
-    update(inputKeys, lavaY) {
+    update(inputKeys, lavaY, worldPlatforms = []) {
         if (!this.isAlive) return;
         if (this.isNPC) {
-            this.handleNPCLogic();
+            this.handleNPCLogic(worldPlatforms);
         } else {
             this.handleMovement(inputKeys);
         }
@@ -57,12 +58,39 @@ export class Survivor {
         }
     }
 
-    handleNPCLogic() {
-        if (Math.random() > 0.985) this.jump();
-        const move = new THREE.Vector3(Math.sin(Date.now() * 0.001) * 0.5, 0, -1);
-        move.normalize().multiplyScalar(this.moveSpeed);
-        this.characterGroup.position.add(move);
-        this.characterGroup.rotation.y = Math.atan2(move.x, move.z);
+    handleNPCLogic(worldPlatforms) {
+        if (!this.targetPlatform || this.characterGroup.position.y > this.targetPlatform.position.y) {
+            const potentialTargets = worldPlatforms.filter(p => p.position.y > this.characterGroup.position.y - 1);
+            if (potentialTargets.length > 0) {
+                this.targetPlatform = potentialTargets.reduce((prev, curr) => {
+                    const distPrev = prev.position.distanceTo(this.characterGroup.position);
+                    const distCurr = curr.position.distanceTo(this.characterGroup.position);
+                    return distCurr < distPrev ? curr : prev;
+                });
+            }
+        }
+
+        if (this.targetPlatform) {
+            const direction = new THREE.Vector3().subVectors(this.targetPlatform.position, this.characterGroup.position);
+            const distXZ = new THREE.Vector2(direction.x, direction.z).length();
+            
+            direction.y = 0;
+            direction.normalize();
+            
+            if (distXZ > 0.5) {
+                const move = direction.clone().multiplyScalar(this.moveSpeed);
+                this.characterGroup.position.add(move);
+                this.characterGroup.rotation.y = Math.atan2(direction.x, direction.z);
+            }
+
+            if (distXZ < 3.5 && this.targetPlatform.position.y > this.characterGroup.position.y + 0.5) {
+                if (Math.random() > 0.96) this.jump();
+            }
+
+            if (distXZ < 1 && this.isGrounded && Math.random() > 0.98) {
+                this.jump();
+            }
+        }
     }
 
     applyPhysics() {
