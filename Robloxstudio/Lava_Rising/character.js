@@ -117,12 +117,18 @@ export class Survivor {
     }
 
     die() {
-        if (!this.isAlive) return;
-        this.isAlive = false;
-        this.oofSound.play().catch(() => {});
-        this.characterGroup.rotation.x = Math.PI / 2;
-        this.characterGroup.position.y -= 0.5;
+    if (!this.isAlive) return;
+    this.isAlive = false;
+    this.oofSound.play().catch(() => {});
+    this.characterGroup.rotation.x = Math.PI / 2;
+    this.characterGroup.position.y -= 0.5;
+
+    if (!this.isNPC) {
+        import('./return.js').then(module => {
+            module.handleDeath();
+        });
     }
+}
 
     get position() { return this.characterGroup.position; }
 }
