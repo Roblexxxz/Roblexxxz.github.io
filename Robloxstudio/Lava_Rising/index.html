@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblex: Lava Rising</title>
+    <link rel="stylesheet" href="ui.css">
+</head>
+<body>
+    <div id="loading-overlay">LOADING LAVA...</div>
+    <canvas id="game-canvas"></canvas>
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { Input } from './controls.js';
+        Input.init();
+        
+        const loader = document.getElementById('loading-overlay');
+        window.addEventListener('load', () => {
+            loader.classList.add('hidden');
+        });
+    </script>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
