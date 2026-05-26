@@ -1,7 +1,7 @@
 body {
     margin: 0;
     overflow: hidden;
-    background-color: #000;
+    background-color: #bfe3dd;
     user-select: none;
 }
 
@@ -9,6 +9,10 @@ body {
     display: block;
     width: 100vw;
     height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
 }
 
 #game-ui {
@@ -18,12 +22,37 @@ body {
     background: rgba(25, 25, 25, 0.85);
     color: #fff;
     padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
     border: 3px solid #ffaa00;
     border-radius: 8px;
-    min-width: 220px;
+    min-width: 240px;
     pointer-events: none;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    z-index: 10;
+}
+
+.disaster-banner {
+    font-size: 20px;
+    color: #ffcc00;
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.leaderboard-header {
+    font-size: 16px;
+    border-bottom: 2px solid #ffaa00;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+    color: #aaaaaa;
+}
+
+.player-row {
+    font-size: 15px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .status-dead {
