@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #000;
+    user-select: none;
+}
+
+#game-canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+}
+
+#game-ui {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(25, 25, 25, 0.85);
+    color: #fff;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border: 3px solid #ffaa00;
+    border-radius: 8px;
+    min-width: 220px;
+    pointer-events: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.status-dead {
+    color: #ff3333;
+    font-weight: bold;
+}
