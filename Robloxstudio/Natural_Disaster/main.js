@@ -5,8 +5,9 @@ import { Input } from './controls.js';
 
 let scene, camera, renderer, player, world, npcs = [];
 let roundState = 'intermission';
-let roundTimer = 20;
+let roundTimer = 25;
 let disasterType = 'none';
+let currentIntermissionText = 'Intermission';
 
 function init() {
     scene = new THREE.Scene();
@@ -16,10 +17,10 @@ function init() {
     renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('game-canvas'), antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+    const ambient = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambient);
-    const sun = new THREE.DirectionalLight(0xffffff, 0.85);
-    sun.position.set(40, 100, 20);
+    const sun = new THREE.DirectionalLight(0xffffff, 0.9);
+    sun.position.set(50, 120, 30);
     scene.add(sun);
 
     world = new World(scene);
@@ -36,11 +37,13 @@ function spawnPlayers() {
     npcs = [];
 
     player = new Survivor(scene, false);
-    player.characterGroup.position.set(0, 5, 0);
+    player.characterGroup.position.set(0, 12, 0);
 
+    const names = ['Builderman', 'Telamon', 'ROBLOX', 'Stickmasterluke', 'jake', 'guest1337', ' Shedletsky'];
     for (let i = 0; i < 7; i++) {
         const npc = new Survivor(scene, true);
-        npc.characterGroup.position.set(Math.random() * 20 - 10, 5, Math.random() * 20 - 10);
+        npc.characterGroup.position.set(Math.random() * 30 - 15, 12, Math.random() * 30 - 15);
+        npc.name = names[i];
         npcs.push(npc);
     }
 }
@@ -51,12 +54,15 @@ function updateGameClock() {
         if (roundState === 'intermission') {
             roundState = 'disaster';
             roundTimer = 60;
-            disasterType = Math.random() > 0.5 ? 'meteor' : 'tsunami';
+            const disasters = ['meteor', 'tsunami', 'acidrain'];
+            disasterType = disasters[Math.floor(Math.random() * disasters.length)];
             world.triggerDisaster(disasterType);
+            currentIntermissionText = 'Survive!';
         } else {
             roundState = 'intermission';
-            roundTimer = 20;
+            roundTimer = 25;
             disasterType = 'none';
+            currentIntermissionText = 'Intermission';
             world.reset();
             spawnPlayers();
         }
@@ -67,17 +73,21 @@ function updateHUD() {
     const hud = document.getElementById('game-ui');
     if (!hud) return;
 
-    let content = `<div style="font-size:18px; color:#ffcc00; text-align:center;">`;
+    let textTop = '';
     if (roundState === 'intermission') {
-        content += `NEXT DISASTER IN: ${roundTimer}s`;
+        textTop = `${currentIntermissionText} - Next disaster in ${roundTimer} seconds`;
     } else {
-        content += `DISASTER: ${disasterType.toUpperCase()} (${roundTimer}s)`;
+        if (disasterType === 'meteor') textTop = `Disaster: Meteor Shower! (${roundTimer}s)`;
+        if (disasterType === 'tsunami') textTop = `Disaster: Tsunami Wave! (${roundTimer}s)`;
+        if (disasterType === 'acidrain') textTop = `Disaster: Acid Rain Storm! (${roundTimer}s)`;
     }
-    content += `</div><br>`;
 
-    content += `Your HP: <span style="color:${player.hp > 40 ? '#00ff88' : '#ff0000'}">${Math.round(player.hp)}</span><br><br>`;
-    npcs.forEach((n, i) => {
-        content += `CPU ${i + 1}: ${n.isAlive ? 'ALIVE (' + Math.round(n.hp) + ')' : '<span class="status-dead">OOFED</span>'}<br>`;
+    let content = `<div class="disaster-banner">${textTop}</div>`;
+    content += `<div class="leaderboard-header">Survivors Status</div>`;
+    content += `<div class="player-row"><b>You</b>: <span style="color:${player.hp > 40 ? '#00ff88' : '#ff3333'}">${Math.round(player.hp)} HP</span></div>`;
+    
+    npcs.forEach(n => {
+        content += `<div class="player-row"><span>${n.name}</span>: ${n.isAlive ? '<span style="color:#00ff88">ALIVE</span>' : '<span class="status-dead">OOFED</span>'}</div>`;
     });
 
     hud.innerHTML = content;
@@ -93,16 +103,16 @@ function animate() {
 
     if (player.isAlive) {
         if (Input.cameraMode === '1st') {
-            camera.position.set(player.position.x, player.position.y + 0.6, player.position.z);
+            camera.position.set(player.position.x, player.position.y + 0.65, player.position.z);
             camera.rotation.order = 'YXZ';
             camera.rotation.y = Input.euler.y;
             camera.rotation.x = Input.euler.x;
             player.head.visible = false;
         } else {
-            const dist = 18;
+            const dist = 22;
             camera.position.x = player.position.x + Math.sin(Input.euler.y) * dist;
             camera.position.z = player.position.z + Math.cos(Input.euler.y) * dist;
-            camera.position.y = player.position.y + 7 + (Math.sin(Input.euler.x) * dist);
+            camera.position.y = player.position.y + 9 + (Math.sin(Input.euler.x) * dist);
             camera.lookAt(player.position);
             player.head.visible = true;
         }
