@@ -1,1 +1,95 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Roblex | Games</title> <link rel="stylesheet" href="../style.css"> <style> .content-area { flex: 1; height: calc(100vh - 60px); overflow-y: auto; padding: 20px; } .container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: flex-start; } .game-card { background: #2a2a2a; border-radius: 12px; padding: 20px; width: 300px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.2s; } .game-card:hover { transform: translateY(-5px); } h1 { width: 100%; margin-bottom: 20px; color: #fff; } </style> </head> <body> <div id="nav" class="navbar"> <span>Roblex</span> <div> <span id="user-display" style="margin-right: 15px; font-weight: bold;"></span> <span id="balance-display" style="color: #00e676; margin-right: 15px;">R$: 0</span> <button id="logout-btn" class="nav-logout">Logout</button> </div> </div> <div class="wrapper"> <div id="sidebar" class="sidebar"> <button class="side-btn" onclick="window.location.href='../index.html'">Home</button> <button class="side-btn active">Games</button> <button class="side-btn" onclick="window.location.href='../index.html#avatar'">Avatar</button> <button class="side-btn">Inventory</button> <button class="side-btn">Marketplace</button> </div> <div class="content-area"> <h1>Games</h1> <div class="container"> <div class="game-card"> <h2>Baseplate</h2> <p>A classic Roblox baseplate experience with bacon avatars.</p> <button id="join-baseplate" class="primary-btn">Join</button> </div> <div class="game-card"> <h2>Lava Rising</h2> <p>Escape the rising tide of lava! Climb to survive.</p> <button id="join-lavarising" class="primary-btn">Join</button> </div> </div> </div> </div> <div class="game-card"> <h2>Natural Disaster Survival</h2> <p>Get Blown up by meteros!</p> <button id="join-natural-disaster-survival" class="primary-btn">Join</button> </div> </div> </div> </div> <script> document.getElementById('join-baseplate').addEventListener('click', () => { const room = 'baseplate'; window.location.href = ../Robloxstudio/testgame/index.html?room=${room}; }); document.getElementById('join-lavarising').addEventListener('click', () => { window.location.href = ../Robloxstudio/Lava_Rising/index.html; }); document.getElementById('join-natural-disaster-survival').addEventListener('click', () => { window.location.href = ../Robloxstudio/Natural_Disaster/index.html; }); </script> </body> </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblex | Games</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .content-area {
+            flex: 1;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: flex-start;
+        }
+        .game-card {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            width: 300px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+        h1 {
+            width: 100%;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="nav" class="navbar">
+        <span>Roblex</span>
+        <div>
+            <span id="user-display" style="margin-right: 15px; font-weight: bold;"></span>
+            <span id="balance-display" style="color: #00e676; margin-right: 15px;">R$: 0</span>
+            <button id="logout-btn" class="nav-logout">Logout</button>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <div id="sidebar" class="sidebar">
+            <button class="side-btn" onclick="window.location.href='../index.html'">Home</button>
+            <button class="side-btn active">Games</button>
+            <button class="side-btn" onclick="window.location.href='../index.html#avatar'">Avatar</button>
+            <button class="side-btn">Inventory</button>
+            <button class="side-btn">Marketplace</button>
+        </div>
+
+        <div class="content-area">
+            <h1>Games</h1>
+            <div class="container">
+                <div class="game-card">
+                    <h2>Baseplate</h2>
+                    <p>A classic Roblox baseplate experience with bacon avatars.</p>
+                    <button id="join-baseplate" class="primary-btn">Join</button>
+                </div>
+
+                <div class="game-card">
+                    <h2>Lava Rising</h2>
+                    <p>Escape the rising tide of lava! Climb to survive.</p>
+                    <button id="join-lavarising" class="primary-btn">Join</button>
+                </div>
+
+                <div class="game-card">
+                    <h2>Natural Disaster Survival</h2>
+                    <p>Get Blown up by meteors!</p>
+                    <button id="join-natural-disaster-survival" class="primary-btn">Join</button>
+                </div>
+            </div> </div> </div> <script>
+        document.getElementById('join-baseplate').addEventListener('click', () => {
+            const room = 'baseplate';
+            // Fixed: Added backticks (``) around the URL string to make string interpolation work
+            window.location.href = `../Robloxstudio/testgame/index.html?room=${room}`;
+        });
+
+        document.getElementById('join-lavarising').addEventListener('click', () => {
+            window.location.href = '../Robloxstudio/Lava_Rising/index.html';
+        });
+
+        document.getElementById('join-natural-disaster-survival').addEventListener('click', () => {
+            window.location.href = '../Robloxstudio/Natural_Disaster/index.html';
+        });
+    </script>
+</body>
+</html>
