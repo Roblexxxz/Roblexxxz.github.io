@@ -79,8 +79,9 @@ export class World {
                 this.parts.push({ mesh: leg, isStatic: false, velocity: new THREE.Vector3(), broken: false, hp: 35 });
             }
         }
+    }
 
-        triggerDisaster(type) {
+    triggerDisaster(type) {
         this.currentDisaster = type;
         if (type === 'tsunami') {
             this.tsunamiActive = true;
@@ -270,4 +271,3 @@ export class World {
         this.createMap();
     }
 }
-    }
