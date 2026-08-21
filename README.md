@@ -11,9 +11,15 @@ A Roblox-inspired web game platform built with HTML, CSS, JavaScript, and Three.
 
 ## Getting Started
 
-1. Open `index.html` in your web browser
-2. Sign up for an account or log in
-3. Click "Games" and join Baseplate to start playing
+1. Start a local web server from the project folder, for example:
+	`python3 -m http.server 8000`
+2. Open `http://localhost:8000/index.html` in your web browser
+3. Sign up for an account or log in
+4. Click "Games" and join a game
+
+The games use ES modules, so they must be opened through HTTP. Opening
+`index.html` directly as a `file://` URL prevents browsers from loading the
+game modules.
 
 ## Game Controls
 

@@ -1,6 +1,5 @@
 // Baseplate Game - Roblex
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { loadBaconHair } from '../../Content/Avatar/Assets/BaconHair.js';
 import { Input } from '../../Logic/controls.js';
 import { Character } from './character.js';
 

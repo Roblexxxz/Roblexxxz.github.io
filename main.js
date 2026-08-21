@@ -121,6 +121,7 @@ function enterApp() {
     document.getElementById('nav').classList.remove('hidden');
     document.getElementById('sidebar').classList.remove('hidden');
     document.getElementById('user-display').innerText = currentUser.username;
+    document.getElementById('moderator-badge').classList.toggle('hidden', currentUser.username !== 'Casrymini');
     document.getElementById('balance-display').innerText = `R$: ${currentUser.balance}`;
     
     showTab('home');

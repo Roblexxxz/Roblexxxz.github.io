@@ -41,7 +41,8 @@
     <div id="nav" class="navbar">
         <span>Roblex</span>
         <div>
-            <span id="user-display" style="margin-right: 15px; font-weight: bold;"></span>
+            <span id="user-display" style="margin-right: 5px; font-weight: bold;"></span>
+            <img id="moderator-badge" class="hidden" src="../Badges/assets/moderator.png" alt="Moderator" title="Moderator" style="width: 22px; height: 22px; vertical-align: middle; margin-right: 15px;">
             <span id="balance-display" style="color: #00e676; margin-right: 15px;">R$: 0</span>
             <button id="logout-btn" class="nav-logout">Logout</button>
         </div>
@@ -66,12 +67,6 @@
                 </div>
 
                 <div class="game-card">
-                    <h2>Lava Rising</h2>
-                    <p>Escape the rising tide of lava! Climb to survive.</p>
-                    <button id="join-lavarising" class="primary-btn">Join</button>
-                </div>
-
-                <div class="game-card">
                     <h2>Natural Disaster Survival</h2>
                     <p>Get Blown up by meteors!</p>
                     <button id="join-natural-disaster-survival" class="primary-btn">Join</button>
@@ -79,17 +74,18 @@
             </div> </div> </div> <script>
         document.getElementById('join-baseplate').addEventListener('click', () => {
             const room = 'baseplate';
-            // Fixed: Added backticks (``) around the URL string to make string interpolation work
-            window.location.href = `../Robloxstudio/testgame/index.html?room=${room}`;
-        });
-
-        document.getElementById('join-lavarising').addEventListener('click', () => {
-            window.location.href = '../Robloxstudio/Lava_Rising/index.html';
+            window.location.href = `../Robloxstudio/Baseplate/index.html?room=${room}`;
         });
 
         document.getElementById('join-natural-disaster-survival').addEventListener('click', () => {
             window.location.href = '../Robloxstudio/Natural_Disaster/index.html';
         });
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser) {
+            document.getElementById('user-display').innerText = currentUser.username;
+            document.getElementById('balance-display').innerText = `R$: ${currentUser.balance}`;
+            document.getElementById('moderator-badge').classList.toggle('hidden', currentUser.username !== 'Casrymini');
+        }
     </script>
 </body>
 </html>

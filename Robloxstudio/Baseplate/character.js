@@ -1,6 +1,6 @@
 // Character creation and management for Roblex Baseplate game
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { loadBaconHair } from '../../Content/Avatar/Assets/BaconHair.js';
+import { applyBaconHair } from '../../Content/Avatar/Assets/BaconHair.js';
 
 export class Character {
     constructor(scene) {
@@ -52,9 +52,7 @@ export class Character {
 
             // Add bacon hair
             try {
-                const baconHair = loadBaconHair();
-                baconHair.position.y = 1.8;
-                this.head.add(baconHair);
+                applyBaconHair(this.characterGroup, this.head);
             } catch (hairError) {
                 console.warn('Failed to load bacon hair:', hairError);
             }

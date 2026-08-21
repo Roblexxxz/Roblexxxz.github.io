@@ -68,7 +68,9 @@ export class Survivor {
         this.applyPhysics(world.parts);
         this.checkHazards(world);
         this.animator.animate(this, inputKeys);
-        handleMovement(keys, eulerY) {
+    }
+
+    handleMovement(keys, eulerY) {
         const move = new THREE.Vector3();
         if (keys['w']) move.z -= 1;
         if (keys['s']) move.z += 1;
@@ -207,4 +209,3 @@ export class Survivor {
 
     get position() { return this.characterGroup.position; }
 }
-    }
