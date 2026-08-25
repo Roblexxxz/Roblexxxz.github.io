@@ -91,6 +91,8 @@ export class Survivor {
 
     handleNPCLogic(world, target) {
         this.hostile = world.currentDisaster === 'zombie';
+        this.head.material.color.setHex(this.hostile ? 0x7f8c52 : 0xdcdde1);
+        this.torso.material.color.setHex(this.hostile ? 0x6b1f2a : 0x2f3640);
         if (this.hostile && target && target.isAlive) {
             this.aiTarget = target;
         }
@@ -108,8 +110,9 @@ export class Survivor {
             }
         }
 
-        if (this.aiTarget && this.aiTarget.mesh) {
-            const tPos = this.aiTarget.mesh.position;
+        const targetObject = this.aiTarget && (this.aiTarget.mesh || this.aiTarget.characterGroup);
+        if (targetObject) {
+            const tPos = targetObject.position;
             const cPos = this.characterGroup.position;
             const dir = new THREE.Vector3(tPos.x - cPos.x, 0, tPos.z - cPos.z);
             const dist = dir.length();
