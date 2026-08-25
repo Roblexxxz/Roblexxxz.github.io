@@ -16,6 +16,7 @@ export class Survivor {
         this.moveSpeed = isNPC ? 0.085 : 0.16;
         this.aiTarget = null;
         this.lastDisaster = 'none';
+        this.hostile = false;
         this.animator = new AvatarAnimator();
         this.oofSound = new Audio('../../Content/sounds/roblox-ooof-made-with-Voicemod.mp3');
         this.createModel();
@@ -56,11 +57,11 @@ export class Survivor {
         this.scene.add(this.characterGroup);
     }
 
-    update(inputKeys, world, eulerY = 0) {
+    update(inputKeys, world, eulerY = 0, target = null) {
         if (!this.isAlive) return;
 
         if (this.isNPC) {
-            this.handleNPCLogic(world);
+            this.handleNPCLogic(world, target);
         } else {
             this.handleMovement(inputKeys, eulerY);
         }
@@ -88,14 +89,18 @@ export class Survivor {
         }
     }
 
-    handleNPCLogic(world) {
-        if (!this.aiTarget || Math.random() > 0.99 || world.currentDisaster !== this.lastDisaster) {
+    handleNPCLogic(world, target) {
+        this.hostile = world.currentDisaster === 'zombie';
+        if (this.hostile && target && target.isAlive) {
+            this.aiTarget = target;
+        }
+        if (!this.hostile && (!this.aiTarget || Math.random() > 0.99 || world.currentDisaster !== this.lastDisaster)) {
             this.lastDisaster = world.currentDisaster;
             const validParts = world.parts.filter(p => !p.broken);
             
             if (world.currentDisaster === 'tsunami') {
                 this.aiTarget = validParts.reduce((highest, curr) => curr.mesh.position.y > highest.mesh.position.y ? curr : highest, validParts);
-            } else if (world.currentDisaster === 'meteor' || world.currentDisaster === 'acidrain') {
+            } else if (world.currentDisaster === 'meteor' || world.currentDisaster === 'acidrain' || world.currentDisaster === 'alien') {
                 const shelters = validParts.filter(p => p.mesh.position.y > 4 && p.mesh.geometry.type === 'BoxGeometry');
                 this.aiTarget = shelters.length > 0 ? shelters[Math.floor(Math.random() * shelters.length)] : validParts[Math.floor(Math.random() * validParts.length)];
             } else {
@@ -118,6 +123,7 @@ export class Survivor {
             } else {
                 this.velocity.x = 0;
                 this.velocity.z = 0;
+                if (this.hostile && target && target.isAlive) target.hp -= 0.35;
             }
 
             if (tPos.y > cPos.y + 1 && this.isGrounded && Math.random() > 0.92) {

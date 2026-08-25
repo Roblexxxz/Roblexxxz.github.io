@@ -12,6 +12,9 @@ export class World {
         this.currentDisaster = 'none';
         this.fireBricks = [];
         this.rainParticles = null;
+        this.ufo = null;
+        this.aliens = [];
+        this.alienInvasionActive = false;
         this.createMap();
     }
 
@@ -34,16 +37,26 @@ export class World {
     }
 
     buildStructure() {
-        const floors = 3;
+        const buildings = [
+            { x: 0, z: 0, floors: 3, size: 20, color: 0x95a5a6 },
+            { x: -32, z: -25, floors: 2, size: 16, color: 0x8e9b9e },
+            { x: 32, z: -22, floors: 3, size: 14, color: 0xb87950 },
+            { x: -30, z: 29, floors: 2, size: 18, color: 0x668f91 },
+            { x: 31, z: 30, floors: 3, size: 16, color: 0xc18f55 }
+        ];
+
+        buildings.forEach(building => this.buildBuilding(building));
+    }
+
+    buildBuilding({ x: centerX, z: centerZ, floors, size, color }) {
         const heightPerFloor = 5;
-        const size = 20;
 
         for (let f = 0; f < floors; f++) {
             const y = f * heightPerFloor;
             const slabGeo = new THREE.BoxGeometry(size, 0.5, size);
             const slabMat = new THREE.MeshStandardMaterial({ color: 0x7f8c8d, roughness: 0.6 });
             const slab = new THREE.Mesh(slabGeo, slabMat);
-            slab.position.set(0, y, 0);
+            slab.position.set(centerX, y, centerZ);
             this.scene.add(slab);
             this.parts.push({ mesh: slab, isStatic: f === 0, velocity: new THREE.Vector3(), broken: false, hp: 120 });
 
@@ -56,9 +69,9 @@ export class World {
 
             wallData.forEach(pos => {
                 const wallGeo = new THREE.BoxGeometry(pos.w, heightPerFloor, pos.d);
-                const wallMat = new THREE.MeshStandardMaterial({ color: 0x95a5a6, roughness: 0.5 });
+                const wallMat = new THREE.MeshStandardMaterial({ color, roughness: 0.5 });
                 const wall = new THREE.Mesh(wallGeo, wallMat);
-                wall.position.set(pos.x, y + heightPerFloor / 2, pos.z);
+                wall.position.set(centerX + pos.x, y + heightPerFloor / 2, centerZ + pos.z);
                 this.scene.add(wall);
                 this.parts.push({ mesh: wall, isStatic: false, velocity: new THREE.Vector3(), broken: false, hp: 80 });
             });
@@ -66,7 +79,7 @@ export class World {
             const tableGeo = new THREE.BoxGeometry(3, 0.2, 5);
             const tableMat = new THREE.MeshStandardMaterial({ color: 0x8e44ad });
             const table = new THREE.Mesh(tableGeo, tableMat);
-            table.position.set(Math.random() * 8 - 4, y + 0.8, Math.random() * 8 - 4);
+            table.position.set(centerX + Math.random() * (size - 6) - (size - 6) / 2, y + 0.8, centerZ + Math.random() * (size - 6) - (size - 6) / 2);
             this.scene.add(table);
             this.parts.push({ mesh: table, isStatic: false, velocity: new THREE.Vector3(), broken: false, hp: 40 });
 
@@ -105,10 +118,22 @@ export class World {
             const mat = new THREE.PointsMaterial({ color: 0x00ff00, size: 0.4, transparent: true, opacity: 0.7 });
             this.rainParticles = new THREE.Points(geo, mat);
             this.scene.add(this.rainParticles);
+        } else if (type === 'alien') {
+            this.alienInvasionActive = true;
+            const ufo = new THREE.Group();
+            const body = new THREE.Mesh(new THREE.SphereGeometry(10, 24, 12), new THREE.MeshStandardMaterial({ color: 0x59636e, metalness: 0.8, roughness: 0.25 }));
+            body.scale.y = 0.22;
+            const glow = new THREE.Mesh(new THREE.CylinderGeometry(6, 8, 0.35, 24), new THREE.MeshBasicMaterial({ color: 0x55ffbb, transparent: true, opacity: 0.8 }));
+            glow.position.y = -1.2;
+            ufo.add(body, glow);
+            ufo.position.set(0, 55, 0);
+            this.ufo = ufo;
+            this.scene.add(ufo);
+            for (let i = 0; i < 5; i++) this.spawnAlien(i);
         }
     }
 
-    update() {
+    update(player = null) {
         if (this.currentDisaster === 'meteor' && Math.random() < 0.12) {
             this.spawnMeteor();
         }
@@ -117,6 +142,7 @@ export class World {
         this.processAcidRain();
         this.processPhysics();
         this.processFire();
+        this.processAliens(player);
     }
 
     spawnMeteor() {
@@ -255,15 +281,56 @@ export class World {
         });
     }
 
+    spawnAlien(index) {
+        const alien = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.65, 1.1, 4, 8), new THREE.MeshStandardMaterial({ color: 0x72d572, roughness: 0.7 }));
+        const eyes = new THREE.Mesh(new THREE.SphereGeometry(0.58, 12, 8), new THREE.MeshBasicMaterial({ color: 0x111827 }));
+        eyes.scale.set(1, 0.65, 0.35);
+        eyes.position.set(0, 1.05, 0.45);
+        alien.add(body, eyes);
+        const angle = (index / 5) * Math.PI * 2;
+        alien.position.set(Math.cos(angle) * 45, 1, Math.sin(angle) * 45);
+        this.scene.add(alien);
+        this.aliens.push(alien);
+    }
+
+    processAliens(player) {
+        if (!this.alienInvasionActive || !player || !player.isAlive) return;
+        this.aliens.forEach(alien => {
+            const direction = new THREE.Vector3().subVectors(player.position, alien.position);
+            direction.y = 0;
+            if (direction.length() > 2.2) {
+                alien.position.add(direction.normalize().multiplyScalar(0.045));
+                alien.lookAt(player.position.x, alien.position.y, player.position.z);
+            } else {
+                player.hp -= 0.45;
+            }
+        });
+        if (this.ufo) {
+            const beamDistance = Math.hypot(player.position.x, player.position.z);
+            if (beamDistance < 18) {
+                player.position.x *= 0.985;
+                player.position.z *= 0.985;
+                player.velocity.y = Math.max(player.velocity.y, 0.12);
+                player.hp -= 0.18;
+            }
+        }
+    }
+
     reset() {
         this.parts.forEach(p => this.scene.remove(p.mesh));
         this.meteors.forEach(m => this.scene.remove(m.mesh));
         if (this.tsunami) this.scene.remove(this.tsunami);
         if (this.rainParticles) this.scene.remove(this.rainParticles);
+        if (this.ufo) this.scene.remove(this.ufo);
+        this.aliens.forEach(alien => this.scene.remove(alien));
         this.parts = [];
         this.meteors = [];
         this.tsunami = null;
         this.rainParticles = null;
+        this.ufo = null;
+        this.aliens = [];
+        this.alienInvasionActive = false;
         this.tsunamiActive = false;
         this.acidRainActive = false;
         this.fireBricks = [];

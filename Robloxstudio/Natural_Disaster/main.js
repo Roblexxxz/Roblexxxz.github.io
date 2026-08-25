@@ -54,7 +54,7 @@ function updateGameClock() {
         if (roundState === 'intermission') {
             roundState = 'disaster';
             roundTimer = 60;
-            const disasters = ['meteor', 'tsunami', 'acidrain'];
+            const disasters = ['meteor', 'tsunami', 'acidrain', 'zombie', 'alien'];
             disasterType = disasters[Math.floor(Math.random() * disasters.length)];
             world.triggerDisaster(disasterType);
             currentIntermissionText = 'Survive!';
@@ -80,6 +80,8 @@ function updateHUD() {
         if (disasterType === 'meteor') textTop = `Disaster: Meteor Shower! (${roundTimer}s)`;
         if (disasterType === 'tsunami') textTop = `Disaster: Tsunami Wave! (${roundTimer}s)`;
         if (disasterType === 'acidrain') textTop = `Disaster: Acid Rain Storm! (${roundTimer}s)`;
+        if (disasterType === 'zombie') textTop = `Disaster: Zombie Attack! (${roundTimer}s)`;
+        if (disasterType === 'alien') textTop = `Disaster: Alien Invasion! (${roundTimer}s)`;
     }
 
     let content = `<div class="disaster-banner">${textTop}</div>`;
@@ -96,10 +98,10 @@ function updateHUD() {
 function animate() {
     requestAnimationFrame(animate);
     Input.update();
-    world.update();
+    world.update(player);
 
     player.update(Input.keys, world, Input.euler.y);
-    npcs.forEach(npc => npc.update(null, world));
+    npcs.forEach(npc => npc.update(null, world, 0, player));
 
     if (player.isAlive) {
         if (Input.cameraMode === '1st') {
