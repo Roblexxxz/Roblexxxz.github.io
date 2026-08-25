@@ -1,3 +1,5 @@
+import { initMobileControls } from '../../Logic/mobile-controls.js';
+
 export const Input = {
     keys: {},
     euler: { x: 0, y: 0 },
@@ -16,6 +18,8 @@ export const Input = {
             const key = e.key.toLowerCase();
             this.keys[key] = false;
         });
+
+        initMobileControls(this);
     },
 
     update() {

@@ -120,6 +120,7 @@ function init() {
         // Event listeners
         window.addEventListener('resize', onWindowResize);
         window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('mobilejump', () => character.jump());
 
         // Start game loop
         console.log('Starting game loop...');

@@ -27,6 +27,7 @@ function init() {
     spawnPlayers();
     
     Input.init();
+    window.addEventListener('mobilejump', () => player.jump());
     setInterval(updateGameClock, 1000);
     animate();
 }

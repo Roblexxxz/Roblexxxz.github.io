@@ -40,6 +40,7 @@ function init() {
     }
 
     Input.init();
+    window.addEventListener('mobilejump', () => player.jump());
     animate();
 }
 

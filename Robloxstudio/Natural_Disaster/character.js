@@ -89,6 +89,13 @@ export class Survivor {
         }
     }
 
+    jump() {
+        if (this.isGrounded) {
+            this.velocity.y = this.jumpForce;
+            this.isGrounded = false;
+        }
+    }
+
     handleNPCLogic(world, target) {
         this.hostile = world.currentDisaster === 'zombie';
         this.head.material.color.setHex(this.hostile ? 0x7f8c52 : 0xdcdde1);

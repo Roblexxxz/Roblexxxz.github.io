@@ -1,3 +1,5 @@
+import { initMobileControls } from './mobile-controls.js';
+
 export const Input = {
     isMoving: false,
     keys: {},
@@ -11,6 +13,8 @@ export const Input = {
             this.keys[e.key.toLowerCase()] = false;
             this.updateMoving();
         });
+
+        initMobileControls(this);
     },
 
     updateMoving() {

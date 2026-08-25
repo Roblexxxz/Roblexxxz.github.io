@@ -1,3 +1,5 @@
+import { initMobileControls } from '../../Logic/mobile-controls.js';
+
 export const Input = {
     isMoving: false,
     keys: {},
@@ -31,6 +33,8 @@ export const Input = {
         window.addEventListener('mousedown', () => {
             document.body.requestPointerLock();
         });
+
+        initMobileControls(this);
     },
 
     update() {
