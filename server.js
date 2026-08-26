@@ -39,6 +39,8 @@ const server = http.createServer(async (req, res) => {
     }
     const user = authenticated(req);
     if (!user) return json(res, 401, { error: 'Please log in again.' });
+    user.friends ||= [];
+    user.incoming ||= [];
     if (req.url.startsWith('/api/users/search')) {
       const query = new URL(req.url, 'http://localhost').searchParams.get('q').toLowerCase();
       return json(res, 200, { users: Object.values(users).filter(item => item.username.toLowerCase().includes(query) && item.username !== user.username).slice(0, 20).map(publicUser) });

@@ -75,10 +75,11 @@ export class Survivor {
 
     attack(zombies) {
         if (this.isNPC || this.attackCooldown > 0 || !this.isAlive) return;
+        const attackDamage = 4;
         const facing = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.characterGroup.rotation.y);
         zombies.filter(zombie => zombie.isNPC && zombie.hostile && zombie.isAlive).forEach(zombie => {
             const offset = new THREE.Vector3().subVectors(zombie.position, this.position);
-            if (offset.length() <= 3 && facing.dot(offset.normalize()) > 0.15) zombie.hp -= 4;
+            if (offset.length() <= 3 && facing.dot(offset.normalize()) > 0.15) zombie.hp -= attackDamage;
         });
         this.attackCooldown = 18;
         this.sword.rotation.z = -1.05;
