@@ -17,6 +17,7 @@ export class Survivor {
         this.aiTarget = null;
         this.lastDisaster = 'none';
         this.hostile = false;
+        this.attackCooldown = 0;
         this.animator = new AvatarAnimator();
         this.oofSound = new Audio('../../Content/sounds/roblox-ooof-made-with-Voicemod.mp3');
         this.createModel();
@@ -53,12 +54,40 @@ export class Survivor {
         this.rightArm = new THREE.Mesh(armGeo, armMat);
         this.rightArm.position.set(0.95, 0.2, 0);
         this.characterGroup.add(this.leftArm, this.rightArm);
+        if (!this.isNPC) this.createSword();
 
         this.scene.add(this.characterGroup);
     }
 
+    createSword() {
+        const sword = new THREE.Group();
+        const blade = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.25, 0.22), new THREE.MeshStandardMaterial({ color: 0xdce6f2, metalness: 0.7, roughness: 0.25 }));
+        blade.position.y = 0.7;
+        const guard = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.1, 0.16), new THREE.MeshStandardMaterial({ color: 0xf1c40f, metalness: 0.5 }));
+        const grip = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.45, 0.16), new THREE.MeshStandardMaterial({ color: 0x6b3f22 }));
+        grip.position.y = -0.25;
+        sword.add(blade, guard, grip);
+        sword.position.set(0.1, -0.25, 0.25);
+        sword.rotation.z = -0.35;
+        this.rightArm.add(sword);
+        this.sword = sword;
+    }
+
+    attack(zombies) {
+        if (this.isNPC || this.attackCooldown > 0 || !this.isAlive) return;
+        const facing = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.characterGroup.rotation.y);
+        zombies.filter(zombie => zombie.isNPC && zombie.hostile && zombie.isAlive).forEach(zombie => {
+            const offset = new THREE.Vector3().subVectors(zombie.position, this.position);
+            if (offset.length() <= 3 && facing.dot(offset.normalize()) > 0.15) zombie.hp -= 4;
+        });
+        this.attackCooldown = 18;
+        this.sword.rotation.z = -1.05;
+        setTimeout(() => { if (this.sword) this.sword.rotation.z = -0.35; }, 140);
+    }
+
     update(inputKeys, world, eulerY = 0, target = null) {
         if (!this.isAlive) return;
+        if (this.attackCooldown > 0) this.attackCooldown--;
 
         if (this.isNPC) {
             this.handleNPCLogic(world, target);

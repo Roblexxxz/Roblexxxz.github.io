@@ -1,6 +1,7 @@
 // --- IMPORTS ---
 // Importing Three.js directly from a CDN as a module to fix version errors
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+import { api, getSession, saveSession } from './Logic/api.js';
 
 // Commented out 404 resources - Uncomment when files exist
 // import { SaveSystem } from './Logic/Save.js';
@@ -23,6 +24,7 @@ const passwordInput = document.getElementById('password');
 const statusMsg = document.getElementById('status-msg');
 
 const navHome = document.getElementById('btn-nav-home');
+const navFriends = document.getElementById('btn-nav-friends');
 const navAvatar = document.getElementById('btn-nav-avatar');
 const navInventory = document.getElementById('btn-nav-inventory');
 const navMarketplace = document.getElementById('btn-nav-marketplace');
@@ -32,6 +34,7 @@ function showTab(tabName) {
     // Hide all main containers
     document.getElementById('auth-section').classList.add('hidden');
     document.getElementById('tab-home').classList.add('hidden');
+    document.getElementById('tab-friends').classList.add('hidden');
     document.getElementById('tab-avatar').classList.add('hidden');
     document.getElementById('tab-inventory').classList.add('hidden');
     document.getElementById('tab-marketplace').classList.add('hidden');
@@ -48,18 +51,20 @@ function showTab(tabName) {
     // Update Sidebar Styling
     document.querySelectorAll('.side-btn').forEach(btn => btn.classList.remove('active'));
     if(tabName === 'home') navHome?.classList.add('active');
+    if(tabName === 'friends') { navFriends?.classList.add('active'); loadFriends(); }
     if(tabName === 'avatar') navAvatar?.classList.add('active');
     if(tabName === 'inventory') navInventory?.classList.add('active');
     if(tabName === 'marketplace') navMarketplace?.classList.add('active');
 }
 
 navHome?.addEventListener('click', () => showTab('home'));
+navFriends?.addEventListener('click', () => showTab('friends'));
 navAvatar?.addEventListener('click', () => showTab('avatar'));
 navInventory?.addEventListener('click', () => showTab('inventory'));
 navMarketplace?.addEventListener('click', () => showTab('marketplace'));
 
 // --- SIGN UP LOGIC ---
-signupBtn?.addEventListener('click', () => {
+signupBtn?.addEventListener('click', async () => {
     const user = usernameInput.value.trim();
     const pass = passwordInput.value.trim();
 
@@ -68,49 +73,39 @@ signupBtn?.addEventListener('click', () => {
         return;
     }
 
-    if (localStorage.getItem(`user_${user}`)) {
-        updateStatus("Username already exists.", "#ff4444");
-        return;
-    }
-
-    const userData = {
-        username: user,
-        password: pass,
-        balance: 50,
-        inventory: []
-    };
-
-    localStorage.setItem(`user_${user}`, JSON.stringify(userData));
-    updateStatus("Account created! You can now Log In.", "#00e676");
+    try { await api('/signup', { method: 'POST', body: JSON.stringify({ username: user, password: pass }) }); updateStatus("Account created! You can now Log In.", "#00e676"); }
+    catch (error) { updateStatus(error.message, "#ff4444"); }
 });
 
 // --- LOGIN LOGIC ---
-loginBtn?.addEventListener('click', () => {
+loginBtn?.addEventListener('click', async () => {
     const user = usernameInput.value.trim();
     const pass = passwordInput.value.trim();
 
-    const storedData = localStorage.getItem(`user_${user}`);
-    if (!storedData) {
-        updateStatus("User not found.", "#ff4444");
-        return;
-    }
-
-    const parsedUser = JSON.parse(storedData);
-    if (parsedUser.password !== pass) {
-        updateStatus("Incorrect password.", "#ff4444");
-        return;
-    }
-
-    currentUser = parsedUser;
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    enterApp();
+    try { const session = await api('/login', { method: 'POST', body: JSON.stringify({ username: user, password: pass }) }); saveSession(session); currentUser = session.user; enterApp(); }
+    catch (error) { updateStatus(error.message, "#ff4444"); }
 });
 
 // --- LOGOUT LOGIC ---
 logoutBtn?.addEventListener('click', () => {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
     location.reload();
 });
+
+async function searchUsers() {
+    const results = document.getElementById('search-results');
+    try {
+        const data = await api(`/users/search?q=${encodeURIComponent(document.getElementById('search-input').value.trim())}`);
+        results.innerHTML = data.users.length ? data.users.map(user => `<div class="friend-row"><span>${user.username}</span><button class="primary-btn friend-action" data-user="${user.username}">Add Friend</button></div>`).join('') : '<p>No users found.</p>';
+        results.classList.remove('hidden');
+        results.querySelectorAll('.friend-action').forEach(button => button.addEventListener('click', async () => { try { await api('/friends/request', { method: 'POST', body: JSON.stringify({ username: button.dataset.user }) }); button.textContent = 'Request sent'; button.disabled = true; } catch (error) { document.getElementById('friend-status').textContent = error.message; } }));
+    } catch (error) { document.getElementById('friend-status').textContent = error.message; }
+}
+document.getElementById('search-btn')?.addEventListener('click', searchUsers);
+async function loadFriends() {
+    try { const data = await api('/friends'); document.getElementById('friend-list').innerHTML = data.friends.length ? data.friends.map(name => `<p class="friend-row">${name}</p>`).join('') : '<p>No friends yet.</p>'; document.getElementById('request-list').innerHTML = data.requests.length ? data.requests.map(name => `<div class="friend-row"><span>${name}</span><span><button class="primary-btn request-action" data-accept="true" data-user="${name}">Accept</button><button class="secondary-btn request-action" data-user="${name}">Decline</button></span></div>`).join('') : '<p>No pending requests.</p>'; document.querySelectorAll('.request-action').forEach(button => button.addEventListener('click', async () => { await api('/friends/respond', { method: 'POST', body: JSON.stringify({ username: button.dataset.user, accept: button.dataset.accept === 'true' }) }); loadFriends(); })); } catch (error) { document.getElementById('friends-status').textContent = error.message; }
+}
 
 function updateStatus(text, color) {
     statusMsg.innerText = text;
@@ -201,7 +196,7 @@ document.querySelectorAll('.swatch').forEach(swatch => {
 window.addEventListener('load', () => {
     const savedSession = localStorage.getItem('currentUser');
     if (savedSession) {
-        currentUser = JSON.parse(savedSession);
+        currentUser = getSession();
         enterApp();
     }
 });

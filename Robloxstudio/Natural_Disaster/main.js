@@ -2,8 +2,10 @@ import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { Survivor } from './character.js';
 import { World } from './world.js';
 import { Input } from './controls.js';
+import { Multiplayer } from '../../Logic/multiplayer.js';
 
 let scene, camera, renderer, player, world, npcs = [];
+let multiplayer;
 let roundState = 'intermission';
 let roundTimer = 25;
 let disasterType = 'none';
@@ -28,6 +30,8 @@ function init() {
     
     Input.init();
     window.addEventListener('mobilejump', () => player.jump());
+    window.addEventListener('keydown', event => { if (event.code === 'KeyE') player.attack(npcs); });
+    window.addEventListener('pointerdown', () => player.attack(npcs));
     setInterval(updateGameClock, 1000);
     animate();
 }
@@ -39,6 +43,7 @@ function spawnPlayers() {
 
     player = new Survivor(scene, false);
     player.characterGroup.position.set(0, 12, 0);
+    multiplayer = new Multiplayer(scene, 'natural-disaster', () => ({ position: { x: player.position.x, y: player.position.y, z: player.position.z }, rotation: { y: player.characterGroup.rotation.y } }));
 
     const names = ['Builderman', 'Telamon', 'ROBLOX', 'Stickmasterluke', 'jake', 'guest1337', ' Shedletsky'];
     for (let i = 0; i < 7; i++) {
@@ -102,6 +107,7 @@ function animate() {
     world.update(player);
 
     player.update(Input.keys, world, Input.euler.y);
+        multiplayer?.update();
     npcs.forEach(npc => npc.update(null, world, 0, player));
 
     if (player.isAlive) {

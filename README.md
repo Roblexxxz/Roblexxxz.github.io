@@ -7,13 +7,14 @@ A Roblox-inspired web game platform built with HTML, CSS, JavaScript, and Three.
 - **3D Avatar Editor**: Customize your character's appearance
 - **Baseplate Game**: Classic Roblox-style gameplay with 3D characters
 - **User Authentication**: Sign up and log in to save your progress
-- **Offline Gameplay**: Play without internet connection
+- **Friends**: Search real registered users, send requests, and accept them
+- **Multiplayer rooms**: See authenticated players currently in the same game
 
 ## Getting Started
 
-1. Start a local web server from the project folder, for example:
-	`python3 -m http.server 8000`
-2. Open `http://localhost:8000/index.html` in your web browser
+1. Install dependencies and start the application server:
+	`npm install && npm start`
+2. Open `http://localhost:8080/index.html` in your web browser
 3. Sign up for an account or log in
 4. Click "Games" and join a game
 
@@ -45,7 +46,7 @@ game modules.
 
 - **Three.js**: 3D graphics and rendering
 - **HTML5 Canvas**: Game rendering
-- **Local Storage**: Data persistence
+- **Node.js and WebSockets**: Shared accounts, friend requests, and room presence
 - **ES6 Modules**: Code organization
 
 ## Browser Support

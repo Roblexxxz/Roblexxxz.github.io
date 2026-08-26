@@ -2,12 +2,14 @@
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { Input } from '../../Logic/controls.js';
 import { Character } from './character.js';
+import { Multiplayer } from '../../Logic/multiplayer.js';
 
 // Game variables
 let scene, camera, renderer;
 let character, baseplate;
 let roomId = 'baseplate';
 let channel = null;
+let multiplayer = null;
 let playerId = `player_${Math.random().toString(36).slice(2, 10)}`;
 const players = new Set();
 
@@ -112,6 +114,7 @@ function init() {
         // Create character
         console.log('Creating character...');
         character = new Character(scene);
+            multiplayer = new Multiplayer(scene, roomId, () => character.getState());
         console.log('Character created successfully');
 
         // Initialize controls
@@ -185,6 +188,7 @@ function onWindowResize() {
 function animate() {
     requestAnimationFrame(animate);
     updateCharacter();
+        multiplayer?.update();
     renderer.render(scene, camera);
 }
 

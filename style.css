@@ -24,3 +24,6 @@ input, select { width: 100%; padding: 12px; margin: 8px 0; background: #191b1d; 
 .modal-content { background: #393b3d; padding: 30px; border-radius: 8px; width: 350px; text-align: center; border: 1px solid #555; }
 .color-row { display: flex; justify-content: center; gap: 10px; }
 .swatch { width: 30px; height: 30px; cursor: pointer; border-radius: 4px; }
+.friend-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #555; }
+.friend-row .primary-btn, .friend-row .secondary-btn { width: auto; margin: 0; padding: 7px 12px; }
+#friend-status, #friends-status { min-height: 20px; color: #ff8888; }
