@@ -97,7 +97,18 @@ async function searchUsers() {
     const results = document.getElementById('search-results');
     try {
         const query = document.getElementById('search-input').value.trim().toLowerCase();
-        const cachedUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        let cachedUsers = [];
+        try {
+            cachedUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        } catch {
+            localStorage.removeItem('allUsers');
+        }
+        if (!Array.isArray(cachedUsers)) cachedUsers = [];
+        if (!cachedUsers.length) {
+            const data = await api('/users');
+            cachedUsers = Array.isArray(data.users) ? data.users : [];
+            localStorage.setItem('allUsers', JSON.stringify(cachedUsers));
+        }
         const data = { users: cachedUsers.filter(user => user.username.toLowerCase().includes(query) && user.username !== currentUser.username).slice(0, 20) };
         results.innerHTML = data.users.length ? data.users.map(user => `<div class="friend-row"><span>${user.username}</span><button class="primary-btn friend-action" data-user="${user.username}">Add Friend</button></div>`).join('') : '<p>No users found.</p>';
         results.classList.remove('hidden');
