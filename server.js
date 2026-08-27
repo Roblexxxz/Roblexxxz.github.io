@@ -42,6 +42,9 @@ const server = http.createServer(async (req, res) => {
     if (!user) return json(res, 401, { error: 'Please log in again.' });
     user.friends ||= [];
     user.incoming ||= [];
+    if (requestUrl.pathname === '/api/users' && req.method === 'GET') {
+      return json(res, 200, { users: Object.values(users).map(publicUser) });
+    }
     if (requestUrl.pathname === '/api/users/search') {
       const query = (requestUrl.searchParams.get('q') || '').toLowerCase();
       return json(res, 200, { users: Object.values(users).filter(item => item.username.toLowerCase().includes(query) && item.username !== user.username).slice(0, 20).map(publicUser) });

@@ -96,13 +96,23 @@ logoutBtn?.addEventListener('click', () => {
 async function searchUsers() {
     const results = document.getElementById('search-results');
     try {
-        const data = await api(`/users/search?q=${encodeURIComponent(document.getElementById('search-input').value.trim())}`);
+        const query = document.getElementById('search-input').value.trim().toLowerCase();
+        const cachedUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        const data = { users: cachedUsers.filter(user => user.username.toLowerCase().includes(query) && user.username !== currentUser.username).slice(0, 20) };
         results.innerHTML = data.users.length ? data.users.map(user => `<div class="friend-row"><span>${user.username}</span><button class="primary-btn friend-action" data-user="${user.username}">Add Friend</button></div>`).join('') : '<p>No users found.</p>';
         results.classList.remove('hidden');
         results.querySelectorAll('.friend-action').forEach(button => button.addEventListener('click', async () => { try { await api('/friends/request', { method: 'POST', body: JSON.stringify({ username: button.dataset.user }) }); button.textContent = 'Request sent'; button.disabled = true; } catch (error) { document.getElementById('friend-status').textContent = error.message; } }));
     } catch (error) { document.getElementById('friend-status').textContent = error.message; }
 }
 document.getElementById('search-btn')?.addEventListener('click', searchUsers);
+async function syncUsers() {
+    try {
+        const data = await api('/users');
+        localStorage.setItem('allUsers', JSON.stringify(data.users));
+    } catch (error) {
+        document.getElementById('friend-status').textContent = error.message;
+    }
+}
 async function loadFriends() {
     try { const data = await api('/friends'); const friends = Array.isArray(data.friends) ? data.friends : []; const requests = Array.isArray(data.requests) ? data.requests : []; document.getElementById('friend-list').innerHTML = friends.length ? friends.map(name => `<p class="friend-row">${name}</p>`).join('') : '<p>No friends yet.</p>'; document.getElementById('request-list').innerHTML = requests.length ? requests.map(name => `<div class="friend-row"><span>${name}</span><span><button class="primary-btn request-action" data-accept="true" data-user="${name}">Accept</button><button class="secondary-btn request-action" data-user="${name}">Decline</button></span></div>`).join('') : '<p>No pending requests.</p>'; document.querySelectorAll('.request-action').forEach(button => button.addEventListener('click', async () => { await api('/friends/respond', { method: 'POST', body: JSON.stringify({ username: button.dataset.user, accept: button.dataset.accept === 'true' }) }); loadFriends(); })); } catch (error) { document.getElementById('friends-status').textContent = error.message; }
 }
@@ -120,6 +130,7 @@ function enterApp() {
     document.getElementById('balance-display').innerText = `R$: ${currentUser.balance}`;
     
     showTab('home');
+    syncUsers();
     if (!is3DActive) init3D();
 }
 
