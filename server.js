@@ -23,15 +23,16 @@ function validName(name) { return typeof name === 'string' && /^[A-Za-z0-9_]{3,2
 
 const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') return json(res, 204, {});
-  if (req.url.startsWith('/api/')) {
+  const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  if (requestUrl.pathname.startsWith('/api/')) {
     const body = req.method === 'POST' ? await readBody(req) : {};
-    if (req.url === '/api/signup' && req.method === 'POST') {
+    if (requestUrl.pathname === '/api/signup' && req.method === 'POST') {
       if (!validName(body.username) || typeof body.password !== 'string' || body.password.length < 6) return json(res, 400, { error: 'Use a 3-20 character username and a password of at least 6 characters.' });
       if (users[body.username]) return json(res, 409, { error: 'Username already exists.' });
       users[body.username] = { username: body.username, password: hash(body.password), balance: 50, friends: [], incoming: [] }; save();
       return json(res, 201, { user: publicUser(users[body.username]) });
     }
-    if (req.url === '/api/login' && req.method === 'POST') {
+    if (requestUrl.pathname === '/api/login' && req.method === 'POST') {
       const user = users[body.username];
       if (!user || user.password !== hash(body.password || '')) return json(res, 401, { error: 'Invalid username or password.' });
       const token = randomBytes(24).toString('hex'); sessions.set(token, user.username);
@@ -41,18 +42,18 @@ const server = http.createServer(async (req, res) => {
     if (!user) return json(res, 401, { error: 'Please log in again.' });
     user.friends ||= [];
     user.incoming ||= [];
-    if (req.url.startsWith('/api/users/search')) {
-      const query = new URL(req.url, 'http://localhost').searchParams.get('q').toLowerCase();
+    if (requestUrl.pathname === '/api/users/search') {
+      const query = (requestUrl.searchParams.get('q') || '').toLowerCase();
       return json(res, 200, { users: Object.values(users).filter(item => item.username.toLowerCase().includes(query) && item.username !== user.username).slice(0, 20).map(publicUser) });
     }
-    if (req.url === '/api/friends' && req.method === 'GET') return json(res, 200, { friends: user.friends, requests: user.incoming });
-    if (req.url === '/api/friends/request' && req.method === 'POST') {
+    if (requestUrl.pathname === '/api/friends' && req.method === 'GET') return json(res, 200, { friends: user.friends, requests: user.incoming });
+    if (requestUrl.pathname === '/api/friends/request' && req.method === 'POST') {
       const target = users[body.username];
       if (!target || target.username === user.username) return json(res, 404, { error: 'User not found.' });
       if (user.friends.includes(target.username) || target.incoming.includes(user.username)) return json(res, 409, { error: 'Request already sent or you are already friends.' });
       target.incoming.push(user.username); save(); return json(res, 201, { message: 'Request sent.' });
     }
-    if (req.url === '/api/friends/respond' && req.method === 'POST') {
+    if (requestUrl.pathname === '/api/friends/respond' && req.method === 'POST') {
       const index = user.incoming.indexOf(body.username);
       if (index < 0 || !users[body.username]) return json(res, 404, { error: 'Request not found.' });
       user.incoming.splice(index, 1);
