@@ -1,5 +1,6 @@
 const token = () => localStorage.getItem('authToken');
-const apiBase = window.location.protocol === 'file:' ? 'http://localhost:8080/api' : new URL('/api', window.location.href).origin + '/api';
+const isStaticSite = window.location.protocol === 'file:' || window.location.hostname.endsWith('github.io');
+const apiBase = isStaticSite ? 'http://localhost:8080/api' : new URL('/api', window.location.href).origin + '/api';
 const localUsersKey = 'localUsers';
 const localUser = () => JSON.parse(localStorage.getItem('currentUser') || 'null');
 const readLocalUsers = () => JSON.parse(localStorage.getItem(localUsersKey) || '{}');
@@ -53,7 +54,7 @@ function localApi(path, options) {
 }
 
 export async function api(path, options = {}) {
-    if (localStorage.getItem('localMode') === 'true') return localApi(path, options);
+    if (isStaticSite || localStorage.getItem('localMode') === 'true') return localApi(path, options);
     const endpoint = new URL(`.${path}`, `${apiBase}/`).href;
     let response;
     try {
