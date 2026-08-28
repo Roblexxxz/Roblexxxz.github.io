@@ -18,6 +18,19 @@ A Roblox-inspired web game platform built with HTML, CSS, JavaScript, and Three.
 3. Sign up for an account or log in
 4. Click "Games" and join a game
 
+## Global Multiplayer Hosting
+
+GitHub Pages only hosts static files and cannot run the multiplayer server. Deploy
+this Node application to a host that supports Node.js and WebSockets, then set
+the server URL before loading the site:
+
+```js
+localStorage.setItem('serverUrl', 'https://your-server.example.com');
+```
+
+The frontend will use that server for login, friends, and WebSocket game rooms.
+All players must use the same server URL, and each player must log in there.
+
 The games use ES modules, so they must be opened through HTTP. Opening
 `index.html` directly as a `file://` URL prevents browsers from loading the
 game modules.
