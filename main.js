@@ -137,8 +137,10 @@ function enterApp() {
     document.getElementById('nav').classList.remove('hidden');
     document.getElementById('sidebar').classList.remove('hidden');
     document.getElementById('user-display').innerText = currentUser.username;
-    document.getElementById('moderator-badge').classList.toggle('hidden', currentUser.username !== 'Casrymini');
-    document.getElementById('verified-badge').classList.toggle('hidden', currentUser.username !== 'Casrymini');
+    const badgeUser = currentUser.username.toLowerCase();
+    const hasStaffBadge = badgeUser === 'casrymini' || badgeUser === 'casrymini1';
+    document.getElementById('moderator-badge').classList.toggle('hidden', !hasStaffBadge);
+    document.getElementById('verified-badge').classList.toggle('hidden', !hasStaffBadge);
     document.getElementById('balance-display').innerText = `R$: ${currentUser.balance}`;
     
     showTab('home');

@@ -1,2 +1,6 @@
-"Owner" "password" = alert:(You Cant Use This Name)
-"YOUSUCK" "password" = alert:(you cant use this name)
+{
+	"names": {
+		"Owner": "You can't use this name",
+		"YOUSUCK": "You can't use this name"
+	}
+}

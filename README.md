@@ -18,18 +18,32 @@ A Roblox-inspired web game platform built with HTML, CSS, JavaScript, and Three.
 3. Sign up for an account or log in
 4. Click "Games" and join a game
 
-## Global Multiplayer Hosting
+## Temporary Global Server
 
-GitHub Pages only hosts static files and cannot run the multiplayer server. Deploy
-this Node application to a host that supports Node.js and WebSockets, then set
-the server URL before loading the site:
+To let other devices play without deploying a server, run these commands in two
+terminals:
 
-```js
-localStorage.setItem('serverUrl', 'https://your-server.example.com');
+```bash
+npm start
+npx localtunnel --port 8080
 ```
 
-The frontend will use that server for login, friends, and WebSocket game rooms.
-All players must use the same server URL, and each player must log in there.
+LocalTunnel prints a public `https://...loca.lt` URL. Share that URL with the
+other players and have everyone open it. Do not use the GitHub Pages URL for
+this session. Keep both terminals running while people play. The URL is
+temporary and changes when the tunnel is restarted.
+
+## Global Multiplayer Hosting
+
+GitHub Pages only hosts static files and cannot run the multiplayer server. A
+Render deployment is included in `render.yaml` and runs the Node server with
+WebSocket support and automatic deploys from this repository.
+
+In Render, create a new Blueprint and select this repository. After deployment,
+open the generated `onrender.com` URL instead of the GitHub Pages URL. The app
+will automatically use that same server for login, friends, and Baseplate or
+Natural Disaster rooms. Everyone must use the generated server URL and log in
+there to appear in the same global room.
 
 The games use ES modules, so they must be opened through HTTP. Opening
 `index.html` directly as a `file://` URL prevents browsers from loading the

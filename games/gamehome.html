@@ -85,8 +85,10 @@
         if (currentUser) {
             document.getElementById('user-display').innerText = currentUser.username;
             document.getElementById('balance-display').innerText = `R$: ${currentUser.balance}`;
-            document.getElementById('moderator-badge').classList.toggle('hidden', currentUser.username !== 'Casrymini');
-            document.getElementById('verified-badge').classList.toggle('hidden', currentUser.username !== 'Casrymini');
+            const badgeUser = currentUser.username.toLowerCase();
+            const hasStaffBadge = badgeUser === 'casrymini' || badgeUser === 'casrymini1';
+            document.getElementById('moderator-badge').classList.toggle('hidden', !hasStaffBadge);
+            document.getElementById('verified-badge').classList.toggle('hidden', !hasStaffBadge);
         }
     </script>
 </body>
