@@ -86,7 +86,7 @@ export class Survivor {
         setTimeout(() => { if (this.sword) this.sword.rotation.z = -0.35; }, 140);
     }
 
-    update(inputKeys, world, eulerY = 0, target = null) {
+    update(inputKeys, world, eulerY = 0, target = null, camera = null) {
         if (!this.isAlive) return;
         if (this.attackCooldown > 0) this.attackCooldown--;
 
@@ -94,11 +94,23 @@ export class Survivor {
             this.handleNPCLogic(world, target);
         } else {
             this.handleMovement(inputKeys, eulerY);
+            if (camera) this.updateCamera(camera);
         }
 
         this.applyPhysics(world.parts);
         this.checkHazards(world);
         this.animator.animate(this, inputKeys);
+    }
+
+    updateCamera(camera, distance = 8, height = 4) {
+        const pos = this.characterGroup.position;
+        const rotY = this.characterGroup.rotation.y;
+
+        camera.position.x = pos.x - Math.sin(rotY) * distance;
+        camera.position.z = pos.z - Math.cos(rotY) * distance;
+        camera.position.y = pos.y + height;
+
+        camera.lookAt(pos.x, pos.y + 1.5, pos.z);
     }
 
     handleMovement(keys, eulerY) {
