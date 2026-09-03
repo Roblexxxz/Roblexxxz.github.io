@@ -13,11 +13,14 @@ let disasterType = 'none';
 let currentIntermissionText = 'Intermission';
 
 function init() {
+    const canvas = document.getElementById('game-canvas');
+    if (!canvas) return;
+
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xbfe3dd);
     
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 2000);
-    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('game-canvas'), antialias: true });
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     const ambient = new THREE.AmbientLight(0xffffff, 0.6);
@@ -31,12 +34,15 @@ function init() {
     
     Input.init();
 
-    // Initialize the camera joystick for touch/mouse rotation
-    cameraJoystick = new CameraJoystick(camera, new THREE.Vector3(0, 5, 0));
+    // Initialize Camera Joystick safely
+    if (typeof CameraJoystick !== 'undefined') {
+        cameraJoystick = new CameraJoystick(camera, player.position);
+    }
 
-    window.addEventListener('mobilejump', () => player.jump());
-    window.addEventListener('keydown', event => { if (event.code === 'KeyE') player.attack(npcs); });
-    window.addEventListener('pointerdown', () => player.attack(npcs));
+    window.addEventListener('mobilejump', () => player?.jump());
+    window.addEventListener('keydown', event => { if (event.code === 'KeyE') player?.attack(npcs); });
+    window.addEventListener('pointerdown', () => player?.attack(npcs));
+    
     setInterval(updateGameClock, 1000);
     animate();
 }
@@ -48,7 +54,15 @@ function spawnPlayers() {
 
     player = new Survivor(scene, false);
     player.characterGroup.position.set(0, 12, 0);
-    multiplayer = new Multiplayer(scene, 'natural-disaster', () => ({ position: { x: player.position.x, y: player.position.y, z: player.position.z }, rotation: { y: player.characterGroup.rotation.y } }));
+    
+    try {
+        multiplayer = new Multiplayer(scene, 'natural-disaster', () => ({ 
+            position: { x: player.position.x, y: player.position.y, z: player.position.z }, 
+            rotation: { y: player.characterGroup.rotation.y } 
+        }));
+    } catch (e) {
+        console.warn('Multiplayer connection failed or file missing:', e);
+    }
 
     const names = ['Builderman', 'Telamon', 'ROBLOX', 'Stickmasterluke', 'jake', 'guest1337', 'Shedletsky'];
     for (let i = 0; i < 7; i++) {
@@ -65,8 +79,6 @@ function updateGameClock() {
         if (roundState === 'intermission') {
             roundState = 'disaster';
             roundTimer = 60;
-            
-            // Added 'lava' to the disaster list
             const disasters = ['meteor', 'tsunami', 'acidrain', 'zombie', 'alien', 'lava'];
             disasterType = disasters[Math.floor(Math.random() * disasters.length)];
             world.triggerDisaster(disasterType);
@@ -126,9 +138,12 @@ function animate() {
             camera.rotation.x = Input.euler.x;
             player.head.visible = false;
         } else {
-            // Keep joystick target focused on the player in third-person view
+            player.head.visible = true;
+            
+            // Camera control through joystick or default mouse follow
             if (cameraJoystick && cameraJoystick.isDragging) {
                 cameraJoystick.target.copy(player.position);
+                cameraJoystick.updateCamera();
             } else {
                 const dist = 22;
                 camera.position.x = player.position.x + Math.sin(Input.euler.y) * dist;
@@ -136,7 +151,6 @@ function animate() {
                 camera.position.y = player.position.y + 9 + (Math.sin(Input.euler.x) * dist);
                 camera.lookAt(player.position);
             }
-            player.head.visible = true;
         }
     }
 
@@ -150,4 +164,9 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-init();
+// Wait for DOM to load before starting
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
