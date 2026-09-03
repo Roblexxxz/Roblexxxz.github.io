@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roblex | Home</title>
-    <link rel="stylesheet" href="style.css">
+    <link id="style" rel="stylesheet" href="style.css">
     </head>
 <body>
 
@@ -76,11 +76,23 @@
 
             <div id="tab-marketplace" class="container hidden">
                 <h1>Marketplace</h1>
-                <p>Marketplace coming soon.</p>
+                <button id="font1switchbtn" onlick="font1Switch()">
+                    Press this to switch to font1 style, costs 50 robux
+                </button>
             </div>
         </div>
     </div>
 
     <script type="module" src="main.js?v=20260827"></script>
+    <script>
+        import { currentRobux } from "data/robux.json";
+        const font1 = document.getElementById("style");
+        function font1Switch() {
+            if (currentRobux.robuxBalance <= 50) {
+                theme.href = "Marketplace/Styles/stylefont1.css";
+            }
+        }
+                
+    </script>
 </body>
 </html>
