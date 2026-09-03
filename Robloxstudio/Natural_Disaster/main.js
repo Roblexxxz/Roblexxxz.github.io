@@ -1,11 +1,12 @@
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { Survivor } from './character.js';
-import { World } from './world.js';
+import { World, CameraJoystick } from './world.js';
 import { Input } from './controls.js';
 import { Multiplayer } from '../../Logic/multiplayer.js';
 
 let scene, camera, renderer, player, world, npcs = [];
 let multiplayer;
+let cameraJoystick;
 let roundState = 'intermission';
 let roundTimer = 25;
 let disasterType = 'none';
@@ -29,6 +30,10 @@ function init() {
     spawnPlayers();
     
     Input.init();
+
+    // Initialize the camera joystick for touch/mouse rotation
+    cameraJoystick = new CameraJoystick(camera, new THREE.Vector3(0, 5, 0));
+
     window.addEventListener('mobilejump', () => player.jump());
     window.addEventListener('keydown', event => { if (event.code === 'KeyE') player.attack(npcs); });
     window.addEventListener('pointerdown', () => player.attack(npcs));
@@ -45,7 +50,7 @@ function spawnPlayers() {
     player.characterGroup.position.set(0, 12, 0);
     multiplayer = new Multiplayer(scene, 'natural-disaster', () => ({ position: { x: player.position.x, y: player.position.y, z: player.position.z }, rotation: { y: player.characterGroup.rotation.y } }));
 
-    const names = ['Builderman', 'Telamon', 'ROBLOX', 'Stickmasterluke', 'jake', 'guest1337', ' Shedletsky'];
+    const names = ['Builderman', 'Telamon', 'ROBLOX', 'Stickmasterluke', 'jake', 'guest1337', 'Shedletsky'];
     for (let i = 0; i < 7; i++) {
         const npc = new Survivor(scene, true);
         npc.characterGroup.position.set(Math.random() * 30 - 15, 12, Math.random() * 30 - 15);
@@ -60,7 +65,9 @@ function updateGameClock() {
         if (roundState === 'intermission') {
             roundState = 'disaster';
             roundTimer = 60;
-            const disasters = ['meteor', 'tsunami', 'acidrain', 'zombie', 'alien'];
+            
+            // Added 'lava' to the disaster list
+            const disasters = ['meteor', 'tsunami', 'acidrain', 'zombie', 'alien', 'lava'];
             disasterType = disasters[Math.floor(Math.random() * disasters.length)];
             world.triggerDisaster(disasterType);
             currentIntermissionText = 'Survive!';
@@ -88,6 +95,7 @@ function updateHUD() {
         if (disasterType === 'acidrain') textTop = `Disaster: Acid Rain Storm! (${roundTimer}s)`;
         if (disasterType === 'zombie') textTop = `Disaster: Zombie Attack! (${roundTimer}s)`;
         if (disasterType === 'alien') textTop = `Disaster: Alien Invasion! (${roundTimer}s)`;
+        if (disasterType === 'lava') textTop = `Disaster: Lava Rising! Climb High! (${roundTimer}s)`;
     }
 
     let content = `<div class="disaster-banner">${textTop}</div>`;
@@ -107,7 +115,7 @@ function animate() {
     world.update(player);
 
     player.update(Input.keys, world, Input.euler.y);
-        multiplayer?.update();
+    multiplayer?.update();
     npcs.forEach(npc => npc.update(null, world, 0, player));
 
     if (player.isAlive) {
@@ -118,11 +126,16 @@ function animate() {
             camera.rotation.x = Input.euler.x;
             player.head.visible = false;
         } else {
-            const dist = 22;
-            camera.position.x = player.position.x + Math.sin(Input.euler.y) * dist;
-            camera.position.z = player.position.z + Math.cos(Input.euler.y) * dist;
-            camera.position.y = player.position.y + 9 + (Math.sin(Input.euler.x) * dist);
-            camera.lookAt(player.position);
+            // Keep joystick target focused on the player in third-person view
+            if (cameraJoystick && cameraJoystick.isDragging) {
+                cameraJoystick.target.copy(player.position);
+            } else {
+                const dist = 22;
+                camera.position.x = player.position.x + Math.sin(Input.euler.y) * dist;
+                camera.position.z = player.position.z + Math.cos(Input.euler.y) * dist;
+                camera.position.y = player.position.y + 9 + (Math.sin(Input.euler.x) * dist);
+                camera.lookAt(player.position);
+            }
             player.head.visible = true;
         }
     }
