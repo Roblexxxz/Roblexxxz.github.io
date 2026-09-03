@@ -149,8 +149,8 @@ export class Survivor {
             this.lastDisaster = world.currentDisaster;
             const validParts = world.parts.filter(p => !p.broken);
             
-            if (world.currentDisaster === 'tsunami') {
-                this.aiTarget = validParts.reduce((highest, curr) => curr.mesh.position.y > highest.mesh.position.y ? curr : highest, validParts);
+            if (world.currentDisaster === 'tsunami' || world.currentDisaster === 'lava') {
+                this.aiTarget = validParts.reduce((highest, curr) => curr.mesh.position.y > highest.mesh.position.y ? curr : highest, validParts[0] || null);
             } else if (world.currentDisaster === 'meteor' || world.currentDisaster === 'acidrain' || world.currentDisaster === 'alien') {
                 const shelters = validParts.filter(p => p.mesh.position.y > 4 && p.mesh.geometry.type === 'BoxGeometry');
                 this.aiTarget = shelters.length > 0 ? shelters[Math.floor(Math.random() * shelters.length)] : validParts[Math.floor(Math.random() * validParts.length)];
@@ -215,6 +215,7 @@ export class Survivor {
     }
 
     checkHazards(world) {
+        // Tsunami damage
         if (world.tsunamiActive && world.tsunami) {
             const tBox = new THREE.Box3().setFromObject(world.tsunami);
             const charBox = new THREE.Box3().setFromObject(this.characterGroup);
@@ -225,6 +226,15 @@ export class Survivor {
             }
         }
 
+        // Lava damage: check if character is touching or below rising lava height
+        if (world.lavaActive && world.lava) {
+            const lavaTop = world.lava.position.y + 0.5; // Surface plane offset based on geometry
+            if (this.characterGroup.position.y - 1.2 <= lavaTop) {
+                this.hp -= 4.5; // Rapid damage from lava exposure
+            }
+        }
+
+        // Acid Rain damage
         if (world.acidRainActive) {
             let sheltered = false;
             const cPos = this.characterGroup.position;
@@ -241,6 +251,7 @@ export class Survivor {
             }
         }
 
+        // Fire Bricks damage
         world.fireBricks.forEach(f => {
             if (this.characterGroup.position.distanceTo(f.mesh.position) < 3) {
                 this.hp -= 3;
