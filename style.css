@@ -17,6 +17,7 @@ input, select { width: 100%; padding: 12px; margin: 8px 0; background: #191b1d; 
 .side-btn.active { background: #393b3d; color: white; border-radius: 4px; }
 
 #avatar-3d-container { width: 100%; height: 300px; background: #111; border-radius: 8px; margin: 10px 0; }
+#fontstyle1 { width: 100%; padding: 12px; background: #00b2ff; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
 .hidden { display: none !important; }
 
 /* Fixed Modal UI */
