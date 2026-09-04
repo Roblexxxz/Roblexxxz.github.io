@@ -2,6 +2,7 @@
 // Importing Three.js directly from a CDN as a module to fix version errors
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { api, getSession, saveSession } from './Logic/api.js';
+import { currentRobux } from './data/robux.js';
 
 // Commented out 404 resources - Uncomment when files exist
 // import { SaveSystem } from './Logic/Save.js';
@@ -141,7 +142,7 @@ function enterApp() {
     const hasStaffBadge = badgeUser === 'casrymini' || badgeUser === 'casrymini1';
     document.getElementById('moderator-badge').classList.toggle('hidden', !hasStaffBadge);
     document.getElementById('verified-badge').classList.toggle('hidden', !hasStaffBadge);
-    document.getElementById('balance-display').innerText = `R$: ${currentUser.balance}`;
+    document.getElementById('balance-display').innerText = `R$: ${currentRobux.robuxBalance}`;
     
     showTab('home');
     syncUsers();

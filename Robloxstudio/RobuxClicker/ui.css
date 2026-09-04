@@ -1,0 +1,53 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #bfe3dd;
+    user-select: none;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+h1 {
+    font-size: 24px;
+    color: #ffaa00;
+    text-align: center;
+    margin-bottom: 10px;
+}
+p {
+    font-size: 16px;
+    color: #ff0000;
+    text-align: center;
+    margin-bottom: 10px;
+}
+#click-button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #ffaa00;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#robux-count {
+    font-size: 18px;
+    color: #00ff00;
+    text-align: center;
+    margin-top: 10px;
+}
+#done-button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #ffaa00;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

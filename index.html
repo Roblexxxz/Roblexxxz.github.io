@@ -76,7 +76,7 @@
 
             <div id="tab-marketplace" class="container hidden">
                 <h1>Marketplace</h1>
-                <button id="font1switchbtn" onlick="font1Switch()">
+                <button id="font1switchbtn" onclick="font1Switch()">
                     Press this to switch to font1 style, costs 50 robux
                 </button>
             </div>
@@ -84,17 +84,21 @@
     </div>
 
     <script type="module" src="main.js?v=20260827"></script>
-    <script>
-        import { currentRobux } from "data/robux.js";
-        const font1 = document.getElementById("style");
-        function font1Switch() {
-            if (currentRobux.robuxBalance <= 50) {
-                theme.href = "Marketplace/Styles/stylefont1.css";
+    <script type="module">
+        import { currentRobux, setRobuxBalance } from './data/robux.js';
+
+        window.font1Switch = function () {
+            const cost = 50;
+
+            if (currentRobux.robuxBalance < cost) {
+                alert("You don't have enough robux.");
+                return;
             }
-            else {
-                alert(`You dont have enough robux to buy this. You need 50`);
-        }
-                
+
+            document.getElementById('style').href = 'Marketplace/Styles/stylefont1.css';
+            setRobuxBalance(currentRobux.robuxBalance - cost);
+            document.getElementById('balance-display').innerText = `R$: ${currentRobux.robuxBalance}`;
+        };
     </script>
 </body>
 </html>
