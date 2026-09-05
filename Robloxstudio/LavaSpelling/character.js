@@ -58,12 +58,10 @@ export class Survivor {
     }
 
     handleMovement() {
-        // Disabled: Players and NPCs remain stationary on top of pillars
         return;
     }
 
     jump() {
-        // Disabled: Jumping turned off for Word Tower mode
         return;
     }
 
@@ -71,8 +69,6 @@ export class Survivor {
         this.velocity.y += this.gravity;
         this.characterGroup.position.y += this.velocity.y;
         this.isGrounded = false;
-
-        // Keep character clamped above their pillar baseline height
         const minY = (this.pillarHeight || 1) + 1.2;
         if (this.characterGroup.position.y <= minY) {
             this.characterGroup.position.y = minY;
@@ -83,12 +79,10 @@ export class Survivor {
 
     checkHazards(world) {
         if (!world) return;
-
-        // Lava damage: check if lava level reaches character height
         if (world.lavaActive && world.lava) {
             const lavaTop = world.lava.position.y + 0.5;
             if (this.characterGroup.position.y - 1.2 <= lavaTop) {
-                this.hp -= 5.0; // Rapid damage when submerged in rising lava
+                this.hp -= 5.0;
             }
         }
 
@@ -100,8 +94,6 @@ export class Survivor {
         this.isAlive = false;
         this.hp = 0;
         this.oofSound.play().catch(() => {});
-        
-        // "OOF" death pose: tip character over
         this.characterGroup.rotation.z = Math.PI / 2;
         this.characterGroup.position.y -= 0.5;
     }
