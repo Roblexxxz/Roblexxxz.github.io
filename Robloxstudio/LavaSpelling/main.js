@@ -79,7 +79,7 @@ function startTypingPhase() {
     roundTimer = 15;
     playerSubmittedThisRound = false;
 
-    // Pick a letter from A-Z
+    // Pick a random prompt letter from A-Z
     currentPromptLetter = ALL_LETTERS[Math.floor(Math.random() * ALL_LETTERS.length)];
     
     const input = document.getElementById('word-input');
@@ -127,7 +127,7 @@ function simulateNPCTyping() {
     npcs.forEach(npc => {
         if (!npc.isAlive) return;
 
-        // 85% chance for NPC to spell correctly
+        // 85% chance for an NPC to spell a valid word
         if (Math.random() < 0.85) {
             const chosenWord = validWords[Math.floor(Math.random() * validWords.length)];
             const addedHeight = chosenWord.length * 1.5;
@@ -145,7 +145,7 @@ function growPlayerPillar(charObj, heightToAdd) {
 }
 
 function showSpeechBubble(charObj, text) {
-    let bubbleContainer = document.getElementById('speech-bubbles');
+    const bubbleContainer = document.getElementById('speech-bubbles');
     if (!bubbleContainer) return;
 
     let bubble = document.getElementById(`bubble-${charObj.id}`);
@@ -171,11 +171,11 @@ function updateSpeechBubbles() {
 
         // Project 3D position to 2D screen coordinate
         const screenPos = c.position.clone();
-        screenPos.y += 3.0; // Place above character head
+        screenPos.y += 3.0; // Position above character head
         screenPos.project(camera);
 
-        const x = (screenPos.x * .5 + .5) * window.innerWidth;
-        const y = (-(screenPos.y * .5) + .5) * window.innerHeight;
+        const x = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
+        const y = (-(screenPos.y * 0.5) + 0.5) * window.innerHeight;
 
         bubble.style.left = `${x}px`;
         bubble.style.top = `${y}px`;
@@ -196,7 +196,10 @@ function updateGameClock() {
 
             roundState = 'LAVA_RISE';
             roundTimer = 8;
-            world.triggerLava(1.0 + (roundNumber * 0.2));
+            
+            // Generate a random lava rise between 1 and 4 units for the round
+            const randomRise = Math.floor(Math.random() * 4) + 1;
+            world.triggerLava(randomRise);
         } 
         else if (roundState === 'LAVA_RISE') {
             const aliveCount = allCharacters.filter(c => c.isAlive).length;
@@ -257,7 +260,11 @@ function updateUI() {
 function animate() {
     requestAnimationFrame(animate);
 
-    world.update(allCharacters);
+    world.update();
+    
+    // Update character health & hazards
+    allCharacters.forEach(c => c.update({}, world));
+    
     updateSpeechBubbles();
 
     renderer.render(scene, camera);
