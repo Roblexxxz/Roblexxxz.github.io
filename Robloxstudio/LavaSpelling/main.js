@@ -1,7 +1,7 @@
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { Survivor } from './character.js';
 import { World } from './world.js';
-import { WORD_BANK } from './wordBank.js';
+import { WORD_BANK, IS_VALID_WORD } from './wordBank.js';
 
 let scene, camera, renderer, world;
 let player, npcs = [];
@@ -11,6 +11,8 @@ let roundState = 'TYPING';
 let roundTimer = 15;
 let roundNumber = 1;
 let currentPromptLetter = 'A';
+
+let playerStreak = 0;
 
 const ALL_LETTERS = Object.keys(WORD_BANK);
 let playerSubmittedThisRound = false;
@@ -42,10 +44,13 @@ function init() {
 }
 
 function setupGameRound() {
-    if (player) scene.remove(player.characterGroup);
-    npcs.forEach(n => scene.remove(n.characterGroup));
+    if (player && player.characterGroup) scene.remove(player.characterGroup);
+    npcs.forEach(n => {
+        if (n.characterGroup) scene.remove(n.characterGroup);
+    });
     npcs = [];
     allCharacters = [];
+    playerStreak = 0;
 
     const positions = world.createSpawnPlatforms(8);
 
@@ -84,6 +89,7 @@ function startTypingPhase() {
     const submitBtn = document.getElementById('submit-btn');
     if (input && submitBtn) {
         input.value = '';
+        input.placeholder = 'Type your word...';
         input.disabled = false;
         submitBtn.disabled = false;
         input.focus();
@@ -109,13 +115,26 @@ function handlePlayerWordSubmit() {
     const input = document.getElementById('word-input');
     const word = input.value.trim().toUpperCase();
 
-    if (word.length > 0 && word.startsWith(currentPromptLetter)) {
+    if (word.length > 0 && word.startsWith(currentPromptLetter) && IS_VALID_WORD(word)) {
         playerSubmittedThisRound = true;
         input.disabled = true;
 
-        const addedHeight = word.length * 1.5;
-        growPlayerPillar(player, addedHeight);
-        showSpeechBubble(player, word);
+        playerStreak++;
+
+        const baseHeight = word.length * 1.5;
+        const lengthMultiplier = word.length >= 12 ? 2.0 : (word.length >= 8 ? 1.5 : 1.0);
+        const streakMultiplier = 1 + (playerStreak - 1) * 0.2;
+
+        const totalHeight = baseHeight * lengthMultiplier * streakMultiplier;
+
+        growPlayerPillar(player, totalHeight);
+        
+        const streakNotice = playerStreak > 1 ? ` (${playerStreak}x Streak!)` : '';
+        showSpeechBubble(player, `${word}${streakNotice}`);
+    } else {
+        playerStreak = 0;
+        input.value = '';
+        input.placeholder = 'INVALID WORD! Streak lost...';
     }
 }
 
@@ -136,8 +155,12 @@ function simulateNPCTyping() {
 function growPlayerPillar(charObj, heightToAdd) {
     const newTargetY = world.addPillarHeight(charObj.id, heightToAdd);
     charObj.pillarHeight = newTargetY;
-    charObj.characterGroup.position.y = newTargetY + 1;
-    charObj.position.y = newTargetY + 1;
+    if (charObj.characterGroup) {
+        charObj.characterGroup.position.y = newTargetY + 1;
+    }
+    if (charObj.position) {
+        charObj.position.y = newTargetY + 1;
+    }
 }
 
 function showSpeechBubble(charObj, text) {
@@ -181,16 +204,35 @@ function clearSpeechBubbles() {
     if (bubbleContainer) bubbleContainer.innerHTML = '';
 }
 
+function updateCameraPosition() {
+    let maxHeight = 0;
+    allCharacters.forEach(c => {
+        if (c.isAlive && c.pillarHeight > maxHeight) {
+            maxHeight = c.pillarHeight;
+        }
+    });
+
+    const targetCameraY = Math.max(25, maxHeight + 15);
+    const targetLookAtY = Math.max(10, maxHeight);
+
+    camera.position.y += (targetCameraY - camera.position.y) * 0.05;
+    camera.lookAt(0, targetLookAtY, 0);
+}
+
 function updateGameClock() {
     roundTimer--;
 
     if (roundTimer <= 0) {
         if (roundState === 'TYPING') {
+            if (!playerSubmittedThisRound && player.isAlive) {
+                playerStreak = 0;
+            }
+
             simulateNPCTyping();
 
             roundState = 'LAVA_RISE';
             roundTimer = 8;
-            const randomRise = Math.floor(Math.random() * 4) + 1;
+            const randomRise = Math.floor(Math.random() * 4) + 2;
             world.triggerLava(randomRise);
         } 
         else if (roundState === 'LAVA_RISE') {
@@ -223,7 +265,8 @@ function updateUI() {
         timerBadge.textContent = `${roundTimer}s`;
 
         if (roundState === 'TYPING') {
-            promptText.textContent = `Type words starting with "${currentPromptLetter}"`;
+            const streakText = playerStreak > 0 ? ` (Streak: ${playerStreak})` : '';
+            promptText.textContent = `Type words starting with "${currentPromptLetter}"${streakText}`;
         } else if (roundState === 'LAVA_RISE') {
             promptText.textContent = `LAVA IS RISING! STAY HIGH!`;
         } else {
@@ -255,6 +298,7 @@ function animate() {
     world.update();
     allCharacters.forEach(c => c.update({}, world));
     
+    updateCameraPosition();
     updateSpeechBubbles();
 
     renderer.render(scene, camera);
