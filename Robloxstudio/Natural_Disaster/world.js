@@ -48,7 +48,7 @@ export class World {
             { x: -32, z: -25, floors: 4, size: 16, color: 0x8e9b9e },
             { x: 32, z: -22, floors: 4, size: 14, color: 0xb87950 },
             { x: -30, z: 29, floors: 3, size: 18, color: 0x668f91 },
-            { x: 31, z: 30, floors: 4, size: 16, color: 0xc18f55 }
+            { x: 31, z: 30, floors: 6, size: 16, color: 0xc18f55 }
         ];
 
         buildings.forEach(building => this.buildBuilding(building));
