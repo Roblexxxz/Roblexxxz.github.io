@@ -1,7 +1,7 @@
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { Survivor } from './character.js';
 import { World } from './world.js';
-import { WORD_BANK } from './wordBank.js';
+import { WORD_BANK, IS_VALID_WORD } from './wordBank.js';
 
 let scene, camera, renderer, world;
 let player, npcs = [];
@@ -14,7 +14,6 @@ let currentPromptLetter = 'A';
 
 const ALL_LETTERS = Object.keys(WORD_BANK);
 let playerSubmittedThisRound = false;
-let targetCameraY = 25;
 
 function init() {
     const canvas = document.getElementById('game-canvas');
@@ -57,7 +56,7 @@ function setupGameRound() {
     player.characterGroup.position.set(positions[0].x, positions[0].y, positions[0].z);
     allCharacters.push(player);
 
-    const npcNames = ['Admin', 'E', 'ROBLOX', 'Stickmasterluke', 'jake', 'guest1337', 'Shedletsky'];
+    const npcNames = ['Builderman', 'Telamon', 'ROBLOX', 'Stickmasterluke', 'jake', 'guest1337', 'Shedletsky'];
     for (let i = 0; i < 7; i++) {
         const npc = new Survivor(scene, true);
         const pos = positions[i + 1];
@@ -69,7 +68,6 @@ function setupGameRound() {
         allCharacters.push(npc);
     }
 
-    targetCameraY = 25;
     camera.position.set(0, 25, 45);
     camera.lookAt(0, 10, 0);
 
@@ -89,6 +87,7 @@ function startTypingPhase() {
         input.value = '';
         input.disabled = false;
         submitBtn.disabled = false;
+        input.placeholder = `Type a real word starting with ${currentPromptLetter}...`;
         input.focus();
     }
 
@@ -112,13 +111,16 @@ function handlePlayerWordSubmit() {
     const input = document.getElementById('word-input');
     const word = input.value.trim().toUpperCase();
 
-    if (word.length > 0 && word.startsWith(currentPromptLetter)) {
+    if (word.length > 0 && word.startsWith(currentPromptLetter) && IS_VALID_WORD(word)) {
         playerSubmittedThisRound = true;
         input.disabled = true;
 
         const addedHeight = word.length * 1.5;
         growPlayerPillar(player, addedHeight);
         showSpeechBubble(player, word);
+    } else {
+        input.value = '';
+        input.placeholder = 'INVALID WORD! Try again...';
     }
 }
 
@@ -195,7 +197,8 @@ function updateGameClock() {
 
             roundState = 'LAVA_RISE';
             roundTimer = 8;
-            const randomRise = Math.floor(Math.random() * 5) + 4;
+            
+            const randomRise = Math.floor(Math.random() * 8) + 6;
             world.triggerLava(randomRise);
         } 
         else if (roundState === 'LAVA_RISE') {
@@ -255,16 +258,17 @@ function updateUI() {
 }
 
 function updateCameraPosition() {
-    let highestY = 0;
+    let focusY = player && player.isAlive ? player.position.y : 0;
+
     allCharacters.forEach(c => {
-        if (c.isAlive && c.position.y > highestY) {
-            highestY = c.position.y;
+        if (c.isAlive && c.position.y > focusY) {
+            focusY = c.position.y;
         }
     });
 
-    targetCameraY = highestY + 20;
-    camera.position.y += (targetCameraY - camera.position.y) * 0.05;
-    camera.lookAt(0, camera.position.y - 15, 0);
+    const targetY = focusY + 15;
+    camera.position.y += (targetY - camera.position.y) * 0.1;
+    camera.lookAt(0, focusY, 0);
 }
 
 function animate() {
