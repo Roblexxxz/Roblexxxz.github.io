@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Tower Lava Survival</title>
+    <link rel="stylesheet" href="ui.css">
+</head>
+<body>
+    <!-- Top-bar typing interface -->
+    <div id="top-bar-container">
+        <div id="prompt-banner">
+            <span id="prompt-text">Category: Words starting with "S"</span>
+            <div id="timer-badge">20s</div>
+        </div>
+        <form id="word-form" onsubmit="return false;">
+            <input 
+                type="text" 
+                id="word-input" 
+                placeholder="Type your word here..." 
+                autocomplete="off" 
+                autofocus 
+            />
+            <button type="submit" id="submit-btn">SUBMIT</button>
+        </form>
+    </div>
+
+    <!-- Roblox-style Leaderboard -->
+    <div id="leaderboard">
+        <div id="leaderboard-title">Pillar Heights</div>
+        <div id="player-list"></div>
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
