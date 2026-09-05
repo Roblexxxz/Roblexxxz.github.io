@@ -85,6 +85,11 @@ h1 {
                     <p>Earn Robux because daniel wont let you!</p>
                     <button id="join-robux-clicker" class="primary-btn">Join</button>
                 </div>
+                <div class="game-card">
+                    <h2>Lava Pillars</h2>
+                    <p>SPEEL WORDS TO NOT GET INCENERATED BY LAVA</p>
+                    <button id="join-lava-pillars" class="primary-btn">Join</button>
+                </div>
             </div> </div> </div> <script>
         document.getElementById('join-baseplate').addEventListener('click', () => {
             const room = 'baseplate';
@@ -99,6 +104,10 @@ h1 {
             const room = 'robuxclicker';
             window.location.href = `../Robloxstudio/RobuxClicker/index.html?room=${room}`;
                 });
+         document.getElementById('join-lava-pillars');.addEventListener('click', () => {
+             const room = 'lavapillarroom';
+             window.location.href = `../Robloxstudio/LavaSpelling/index.html?room=${room}`;
+         });
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if (currentUser) {
             document.getElementById('user-display').innerText = currentUser.username;
