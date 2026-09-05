@@ -11,7 +11,7 @@ export class Survivor {
         this.velocity = new THREE.Vector3();
         this.isGrounded = false;
         this.gravity = -0.015;
-        this.oofSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2874/2874-preview.mp3');
+        this.oofSound = new Audio('../Content/sounds/roblox-ooof-made-with-Voicemod.mp3');
         this.createModel();
     }
 
