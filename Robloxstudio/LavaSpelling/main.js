@@ -11,7 +11,6 @@ let roundState = 'TYPING';
 let roundTimer = 15;
 let roundNumber = 1;
 let currentPromptLetter = 'A';
-
 let playerStreak = 0;
 
 const ALL_LETTERS = Object.keys(WORD_BANK);
@@ -57,7 +56,7 @@ function setupGameRound() {
     player = new Survivor(scene, false);
     player.id = 0;
     player.name = "You";
-    player.pillarHeight = 1;
+    player.pillarHeight = 2;
     player.characterGroup.position.set(positions[0].x, positions[0].y, positions[0].z);
     allCharacters.push(player);
 
@@ -67,7 +66,7 @@ function setupGameRound() {
         const pos = positions[i + 1];
         npc.id = i + 1;
         npc.name = npcNames[i];
-        npc.pillarHeight = 1;
+        npc.pillarHeight = 2;
         npc.characterGroup.position.set(pos.x, pos.y, pos.z);
         npcs.push(npc);
         allCharacters.push(npc);
@@ -87,13 +86,13 @@ function startTypingPhase() {
     
     const input = document.getElementById('word-input');
     const submitBtn = document.getElementById('submit-btn');
-    if (input && submitBtn) {
+    if (input) {
         input.value = '';
         input.placeholder = 'Type your word...';
         input.disabled = false;
-        submitBtn.disabled = false;
         input.focus();
     }
+    if (submitBtn) submitBtn.disabled = false;
 
     clearSpeechBubbles();
     world.stopLava();
@@ -113,6 +112,8 @@ function handlePlayerWordSubmit() {
     if (roundState !== 'TYPING' || playerSubmittedThisRound || !player.isAlive) return;
 
     const input = document.getElementById('word-input');
+    if (!input) return;
+
     const word = input.value.trim().toUpperCase();
 
     if (word.length > 0 && word.startsWith(currentPromptLetter) && IS_VALID_WORD(word)) {
@@ -120,12 +121,9 @@ function handlePlayerWordSubmit() {
         input.disabled = true;
 
         playerStreak++;
-
         const baseHeight = word.length * 1.5;
-        const lengthMultiplier = word.length >= 12 ? 2.0 : (word.length >= 8 ? 1.5 : 1.0);
         const streakMultiplier = 1 + (playerStreak - 1) * 0.2;
-
-        const totalHeight = baseHeight * lengthMultiplier * streakMultiplier;
+        const totalHeight = baseHeight * streakMultiplier;
 
         growPlayerPillar(player, totalHeight);
         
@@ -134,7 +132,7 @@ function handlePlayerWordSubmit() {
     } else {
         playerStreak = 0;
         input.value = '';
-        input.placeholder = 'INVALID WORD! Streak lost...';
+        input.placeholder = 'INVALID WORD!';
     }
 }
 
@@ -155,12 +153,8 @@ function simulateNPCTyping() {
 function growPlayerPillar(charObj, heightToAdd) {
     const newTargetY = world.addPillarHeight(charObj.id, heightToAdd);
     charObj.pillarHeight = newTargetY;
-    if (charObj.characterGroup) {
-        charObj.characterGroup.position.y = newTargetY + 1;
-    }
-    if (charObj.position) {
-        charObj.position.y = newTargetY + 1;
-    }
+    if (charObj.characterGroup) charObj.characterGroup.position.y = newTargetY + 1;
+    if (charObj.position) charObj.position.y = newTargetY + 1;
 }
 
 function showSpeechBubble(charObj, text) {
@@ -229,7 +223,6 @@ function updateGameClock() {
             }
 
             simulateNPCTyping();
-
             roundState = 'LAVA_RISE';
             roundTimer = 8;
             const randomRise = Math.floor(Math.random() * 4) + 2;
@@ -261,9 +254,7 @@ function updateUI() {
     const timerBadge = document.getElementById('timer-badge');
     const playerList = document.getElementById('player-list');
 
-    if (promptText && timerBadge) {
-        timerBadge.textContent = `${roundTimer}s`;
-
+    if (promptText) {
         if (roundState === 'TYPING') {
             const streakText = playerStreak > 0 ? ` (Streak: ${playerStreak})` : '';
             promptText.textContent = `Type words starting with "${currentPromptLetter}"${streakText}`;
@@ -272,6 +263,10 @@ function updateUI() {
         } else {
             promptText.textContent = `Round Over! Resetting...`;
         }
+    }
+
+    if (timerBadge) {
+        timerBadge.textContent = `${roundTimer}s`;
     }
 
     if (playerList) {
