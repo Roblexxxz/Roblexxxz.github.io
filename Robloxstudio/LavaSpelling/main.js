@@ -78,8 +78,6 @@ function startTypingPhase() {
     roundState = 'TYPING';
     roundTimer = 15;
     playerSubmittedThisRound = false;
-
-    // Pick a random prompt letter from A-Z
     currentPromptLetter = ALL_LETTERS[Math.floor(Math.random() * ALL_LETTERS.length)];
     
     const input = document.getElementById('word-input');
@@ -126,8 +124,6 @@ function simulateNPCTyping() {
 
     npcs.forEach(npc => {
         if (!npc.isAlive) return;
-
-        // 85% chance for an NPC to spell a valid word
         if (Math.random() < 0.85) {
             const chosenWord = validWords[Math.floor(Math.random() * validWords.length)];
             const addedHeight = chosenWord.length * 1.5;
@@ -168,10 +164,8 @@ function updateSpeechBubbles() {
             bubble.style.display = 'none';
             return;
         }
-
-        // Project 3D position to 2D screen coordinate
         const screenPos = c.position.clone();
-        screenPos.y += 3.0; // Position above character head
+        screenPos.y += 3.0; 
         screenPos.project(camera);
 
         const x = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
@@ -196,8 +190,6 @@ function updateGameClock() {
 
             roundState = 'LAVA_RISE';
             roundTimer = 8;
-            
-            // Generate a random lava rise between 1 and 4 units for the round
             const randomRise = Math.floor(Math.random() * 4) + 1;
             world.triggerLava(randomRise);
         } 
@@ -261,8 +253,6 @@ function animate() {
     requestAnimationFrame(animate);
 
     world.update();
-    
-    // Update character health & hazards
     allCharacters.forEach(c => c.update({}, world));
     
     updateSpeechBubbles();
