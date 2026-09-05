@@ -57,5 +57,8 @@ const EXPANDED_DICTIONARY = new Set([
 ]);
 
 export function IS_VALID_WORD(word) {
-    return EXPANDED_DICTIONARY.has(word.toUpperCase());
+    if (!word || word.length === 0) return false;
+    const firstLetter = word[0].toUpperCase();
+    const list = WORD_BANK[firstLetter];
+    return list ? list.includes(word.toUpperCase()) : false;
 }
