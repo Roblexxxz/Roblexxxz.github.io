@@ -8,7 +8,7 @@ let scene, camera, renderer, player, world, npcs = [];
 let multiplayer;
 let cameraJoystick;
 let roundState = 'intermission';
-let roundTimer = 25;
+let roundTimer = 10;
 let disasterType = 'none';
 let currentIntermissionText = 'Intermission';
 
@@ -78,7 +78,7 @@ function updateGameClock() {
     if (roundTimer <= 0) {
         if (roundState === 'intermission') {
             roundState = 'disaster';
-            roundTimer = 60;
+            roundTimer = 15;
             const disasters = ['meteor', 'tsunami', 'acidrain', 'zombie', 'alien', 'lava'];
             disasterType = disasters[Math.floor(Math.random() * disasters.length)];
             world.triggerDisaster(disasterType);
