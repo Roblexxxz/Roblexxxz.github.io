@@ -19,7 +19,6 @@ body, html {
     display: block;
 }
 
-/* --- TOP TYPING BAR --- */
 #top-bar-container {
     position: absolute;
     top: 20px;
@@ -117,7 +116,6 @@ body, html {
     transform: scale(0.96);
 }
 
-/* --- LEADERBOARD --- */
 #leaderboard {
     position: absolute;
     top: 20px;
